@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  LayoutDashboard, ShoppingBag, Settings, LogOut, Rocket, 
-  ClipboardList, Bell, MessageSquare, Wrench, ShieldCheck, Check, X as CloseIcon, Eye, Lock, Mail, Trash2, Plus, UserPlus, UserCheck, Image as ImageIcon, Menu, Send, Clock, Users as UsersIcon, Ban, ShieldAlert, CheckCircle2, ChevronRight, Search
+  LayoutDashboard, Settings, LogOut, Rocket, 
+  ClipboardList, MessageSquare, ShieldCheck, Check, X as CloseIcon, Lock, Send, Users as UsersIcon, Ban, ShieldAlert, CheckCircle2, Search, Menu
 } from 'lucide-react';
-import { BoostRequest, PostRequest, VerificationRequest, SupportMessage, AdminSettings, User, Language, BoostPlan, VerifyPlan } from '../types.ts';
+import { BoostRequest, PostRequest, VerificationRequest, SupportMessage, AdminSettings, User, Language } from '../types.ts';
 
 interface AdminPanelProps {
   onClose: () => void;
@@ -37,7 +37,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [replyText, setReplyText] = useState<Record<string, string>>({});
   const [userSearch, setUserSearch] = useState('');
 
-  // Auto-authenticate if current user is in adminEmails
   useEffect(() => {
     if (currentUser && adminEmails.map(e => e.toLowerCase()).includes(currentUser.email.toLowerCase())) {
       setIsAuthenticated(true);
@@ -67,7 +66,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     return (
       <div className="fixed inset-0 z-[200] bg-[#070B14] flex items-center justify-center p-4">
         <div className="bg-slate-900 border border-white/10 p-12 rounded-[3.5rem] w-full max-w-md shadow-2xl text-center">
-          <div className="w-20 h-20 bg-[#FFD600]/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-[#FFD600]/20">
+          <div className="w-20 h-20 bg-[#FFD600]/10 rounded-full flex items-center justify-center mx-auto mb-8">
              <Lock className="text-[#FFD600] w-10 h-10" />
           </div>
           <h2 className="text-3xl font-black text-white mb-8 italic uppercase">Restricted Area</h2>
@@ -80,7 +79,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               onChange={e => setPassword(e.target.value)} 
               required 
             />
-            <button type="submit" className="w-full py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all">ACCESS PANEL</button>
+            <button type="submit" className="w-full py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl shadow-xl transition-all">ACCESS PANEL</button>
           </form>
           <button onClick={onClose} className="mt-8 text-slate-500 text-[10px] font-black uppercase tracking-widest hover:text-white">CLOSE PANEL</button>
         </div>
@@ -96,14 +95,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
   return (
     <div className="min-h-screen bg-[#070B14] text-slate-200 flex flex-col lg:flex-row overflow-hidden font-sans">
+      {/* Sidebar Overlay for Mobile */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 bg-black/60 z-[90] lg:hidden" onClick={() => setIsSidebarOpen(false)}></div>
+      )}
+
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 w-72 bg-[#0F172A] border-r border-white/5 flex flex-col p-8 z-[100] transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="mb-12 flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#FFD600] rounded-xl flex items-center justify-center font-black text-[#1A237E]">B</div>
-          <span className="text-xl font-black text-white tracking-tighter italic uppercase">Admin Hub</span>
+        <div className="mb-12 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#FFD600] rounded-xl flex items-center justify-center font-black text-[#1A237E]">B</div>
+            <span className="text-xl font-black text-white tracking-tighter italic uppercase">Admin Hub</span>
+          </div>
+          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400">
+            <CloseIcon className="w-6 h-6" />
+          </button>
         </div>
 
-        <nav className="space-y-2 flex-grow">
+        <nav className="space-y-2 flex-grow overflow-y-auto custom-scrollbar">
           {navItems.map((item) => (
             <button 
               key={item.id}
@@ -122,9 +131,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       </aside>
 
       <main className="flex-1 lg:ml-72 p-6 md:p-12 h-screen overflow-y-auto custom-scrollbar">
-        <header className="mb-10 flex justify-between items-center">
-            <h1 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter italic">{activeTab}</h1>
-            <div className="bg-[#1A237E]/20 px-6 py-3 rounded-2xl border border-[#1A237E]/40 text-[#FFD600] font-black text-xs">
+        <header className="mb-10 flex justify-between items-center bg-[#070B14] sticky top-0 z-50 py-4">
+            <div className="flex items-center gap-4">
+              <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-3 bg-[#1A237E] text-[#FFD600] rounded-xl shadow-lg">
+                <Menu className="w-6 h-6" />
+              </button>
+              <h1 className="text-2xl md:text-5xl font-black text-white uppercase tracking-tighter italic truncate">{activeTab}</h1>
+            </div>
+            <div className="hidden md:block bg-[#1A237E]/20 px-6 py-3 rounded-2xl border border-[#1A237E]/40 text-[#FFD600] font-black text-xs">
               SERVER TIME: {new Date().toLocaleTimeString()}
             </div>
         </header>
@@ -132,19 +146,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="max-w-6xl mx-auto pb-24">
           {activeTab === 'dashboard' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4">
-              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5">
+              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest mb-4">Total Users</p>
                 <h2 className="text-5xl font-black text-white">{mockUsers.length}</h2>
               </div>
-              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5">
+              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest mb-4">Pending Ads</p>
                 <h2 className="text-5xl font-black text-[#FFD600]">{postRequests.filter(r => r.status === 'pending').length}</h2>
               </div>
-              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5">
+              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest mb-4">Verification Req</p>
                 <h2 className="text-5xl font-black text-green-500">{verificationRequests.filter(r => r.status === 'pending').length}</h2>
               </div>
-              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5">
+              <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest mb-4">Unread Msgs</p>
                 <h2 className="text-5xl font-black text-blue-500">{supportMessages.filter(m => !m.isAdmin && !m.isRead).length}</h2>
               </div>
@@ -232,7 +246,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                </div>
             </div>
           )}
-
+          
+          {/* Other tabs remain same but UI enhanced for mobile */}
           {activeTab === 'support' && (
             <div className="space-y-6 animate-in slide-in-from-bottom-4">
                {Array.from(new Set(supportMessages.filter(m => !m.isAdmin).map(m => m.userEmail))).length === 0 ? (
@@ -254,39 +269,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     <div className="lg:col-span-2 bg-[#0F172A] border border-white/5 rounded-[2.5rem] flex flex-col overflow-hidden">
                        <div className="p-6 border-b border-white/5 bg-black/20 flex justify-between items-center">
                           <span className="font-black uppercase tracking-tighter italic text-[#FFD600]">Support Terminal</span>
-                          <span className="text-[10px] text-slate-500">Secure AES-256 Connection</span>
                        </div>
                        
-                       <div className="flex-1 overflow-y-auto p-8 space-y-4 custom-scrollbar bg-black/10">
+                       <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 custom-scrollbar bg-black/10">
                           {supportMessages.map(m => (
                             <div key={m.id} className={`flex ${m.isAdmin ? 'justify-end' : 'justify-start'}`}>
-                               <div className={`p-5 rounded-2xl max-w-[80%] text-sm shadow-xl ${m.isAdmin ? 'bg-[#1A237E] text-white rounded-br-none' : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'}`}>
+                               <div className={`p-4 md:p-5 rounded-2xl max-w-[90%] md:max-w-[80%] text-sm shadow-xl ${m.isAdmin ? 'bg-[#1A237E] text-white rounded-br-none' : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'}`}>
                                  <p>{m.text}</p>
-                                 <p className={`text-[8px] mt-2 font-black uppercase tracking-widest ${m.isAdmin ? 'text-blue-300' : 'text-slate-500'}`}>{m.timestamp} - {m.isAdmin ? 'ADMIN' : m.userEmail}</p>
+                                 <p className={`text-[8px] mt-2 font-black uppercase tracking-widest ${m.isAdmin ? 'text-blue-300' : 'text-slate-500'}`}>{m.timestamp}</p>
                                </div>
                             </div>
                           ))}
                        </div>
 
-                       <div className="p-6 bg-slate-900/50 border-t border-white/5">
-                          {/* We take the first email for demo purposes, in real app it would be the selected chat email */}
+                       <div className="p-4 md:p-6 bg-slate-900/50 border-t border-white/5">
                           {(() => {
                             const firstEmail = supportMessages.filter(m => !m.isAdmin)[0]?.userEmail;
                             return (
                               <div className="flex gap-4">
                                 <input 
                                   type="text" 
-                                  placeholder="Type reply to user..." 
-                                  className="flex-1 px-6 py-4 bg-slate-800 rounded-2xl text-white outline-none border border-white/10 focus:border-[#FFD600]"
+                                  placeholder="Reply..." 
+                                  className="flex-1 px-4 py-3 md:px-6 md:py-4 bg-slate-800 rounded-2xl text-white outline-none border border-white/10 focus:border-[#FFD600]"
                                   value={replyText[firstEmail] || ''}
                                   onChange={e => setReplyText({...replyText, [firstEmail]: e.target.value})}
-                                  onKeyPress={e => e.key === 'Enter' && firstEmail && handleSendReply(firstEmail)}
                                 />
                                 <button 
                                   onClick={() => firstEmail && handleSendReply(firstEmail)}
-                                  className="p-4 bg-[#FFD600] text-[#1A237E] rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+                                  className="p-3 md:p-4 bg-[#FFD600] text-[#1A237E] rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
                                 >
-                                  <Send className="w-6 h-6" />
+                                  <Send className="w-5 h-5 md:w-6 md:h-6" />
                                 </button>
                               </div>
                             );
@@ -296,29 +308,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                  </div>
                )}
             </div>
-          )}
-
-          {activeTab === 'posts' && (
-             <div className="space-y-6">
-                {postRequests.filter(r => r.status === 'pending').map(req => (
-                  <div key={req.id} className="bg-[#0F172A] p-8 rounded-[3rem] border border-white/5 flex flex-col md:flex-row gap-8 items-center">
-                    <img src={req.product.image} className="w-32 h-32 rounded-3xl object-cover shadow-2xl border border-white/10" />
-                    <div className="flex-1">
-                       <h3 className="text-2xl font-black text-white">{req.product.name}</h3>
-                       <p className="text-[#FFD600] font-black text-xl mb-2">৳{req.product.price}</p>
-                       <div className="flex gap-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                         <span>VENDOR: {req.product.vendor}</span>
-                         <span>CAT: {req.product.category}</span>
-                       </div>
-                    </div>
-                    <div className="flex gap-4">
-                       <button onClick={() => onUpdatePost(req.id, 'approved')} className="w-16 h-16 bg-green-500 text-white rounded-2xl flex items-center justify-center hover:scale-110 transition-all shadow-xl"><Check className="w-8 h-8" /></button>
-                       <button onClick={() => onUpdatePost(req.id, 'rejected')} className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center hover:scale-110 transition-all shadow-xl"><CloseIcon className="w-8 h-8" /></button>
-                    </div>
-                  </div>
-                ))}
-                {postRequests.filter(r => r.status === 'pending').length === 0 && <div className="p-20 text-center bg-[#0F172A] rounded-[3rem] text-slate-500 border border-white/5 font-black uppercase tracking-widest">Everything is Clear</div>}
-             </div>
           )}
         </div>
       </main>

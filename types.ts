@@ -6,8 +6,8 @@ export interface Product {
   originalPrice: number;
   image: string;
   vendor: string;
-  vendorEmail?: string; // Track who posted it
-  vendorUid?: string; // Track by UID
+  vendorEmail?: string;
+  vendorUid?: string;
   category: string;
   rating: number;
   reviews: number;
@@ -16,19 +16,19 @@ export interface Product {
   phone?: string;
   condition?: 'New' | 'Used';
   isFeatured?: boolean;
-  rentalType?: 'Bachelor' | 'Family'; // New field for To-Let
+  rentalType?: 'Bachelor' | 'Family';
 }
 
 export interface User {
-  uid: string; // 000001 format
-  username: string; // alphanumeric only
+  uid: string; // Format: 000001
+  username: string; // alphanumeric only, no spaces
   name: string;
   email: string;
+  password?: string;
   isVerified: boolean;
   postCountToday: number;
   profilePic?: string;
-  password?: string; // Stored for mock auth
-  banExpiresAt?: number | null; // Timestamp
+  banExpiresAt?: number | null;
   isPermanentlyBanned?: boolean;
 }
 
@@ -102,6 +102,7 @@ export enum Page {
   ProductDetail = 'ProductDetail',
   Cart = 'Cart',
   Admin = 'Admin',
+  AdminLogin = 'AdminLogin', // New Page
   SupportChat = 'SupportChat',
   Checkout = 'Checkout',
   ToLet = 'ToLet'

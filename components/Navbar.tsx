@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, ShoppingBag, User, Menu, X, MessageCircle, Wallet, PlusSquare, Moon, Sun, Sparkles, UserPlus, ShieldCheck, Languages, Headset } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, X, MessageCircle, Wallet, PlusSquare, Moon, Sun, Sparkles, UserPlus, ShieldCheck, Languages, Headset, Lock } from 'lucide-react';
 import { Page, User as UserType, Language } from '../types';
 
 interface NavbarProps {
@@ -58,12 +58,17 @@ const Navbar: React.FC<NavbarProps> = ({
 
           <div className="hidden lg:flex flex-1 max-w-sm mx-6">
             <div className="relative w-full">
-              <input type="text" placeholder={language === 'bn' ? 'পণ্য খুঁজুন...' : 'Search products...'} className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-full focus:ring-2 focus:ring-[#1A237E] text-sm outline-none transition-colors" />
+              <input type="text" placeholder={language === 'bn' ? 'পণ্য খুঁজুন...' : 'Search products...'} className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-full focus:ring-2 focus:ring-[#1A237E] text-sm outline-none transition-colors font-bold" />
               <Search className="absolute left-3 top-2 text-slate-400 w-4 h-4" />
             </div>
           </div>
 
-          <div className="hidden lg:flex items-center space-x-5">
+          <div className="hidden lg:flex items-center space-x-4">
+            <button onClick={() => setCurrentPage(Page.AdminLogin)} className="p-2 bg-[#1A237E] text-[#FFD600] rounded-xl transition-all hover:scale-110 flex items-center gap-2 px-3">
+              <Lock className="w-4 h-4" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Admin</span>
+            </button>
+
             <button onClick={() => setCurrentPage(Page.SupportChat)} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-[#FFD600] transition-all hover:scale-110" title={language === 'bn' ? 'লাইভ সাপোর্ট' : 'Live Support'}>
               <Headset className="w-5 h-5" />
             </button>
@@ -77,28 +82,26 @@ const Navbar: React.FC<NavbarProps> = ({
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             
-            <button onClick={() => setCurrentPage(Page.PostAd)} className="flex items-center gap-2 px-6 py-2 bg-[#FFD600] text-[#1A237E] font-bold rounded-full hover:scale-105 transition-all text-sm shadow-md">
+            <button onClick={() => setCurrentPage(Page.PostAd)} className="flex items-center gap-2 px-6 py-2 bg-[#FFD600] text-[#1A237E] font-black rounded-full hover:scale-105 transition-all text-sm shadow-md italic">
               <PlusSquare className="w-4 h-4" /> {language === 'bn' ? 'অ্যাড দিন' : 'Post Ad'}
             </button>
 
             <div className="flex items-center gap-2 border-l pl-4 border-slate-200 dark:border-slate-700">
-              <button onClick={() => setCurrentPage(Page.Wallet)} className="p-2 text-slate-400 hover:text-[#1A237E] dark:hover:text-white"><Wallet className="w-6 h-6" /></button>
-              <button onClick={() => setCurrentPage(Page.Cart)} className="p-2 text-slate-400 hover:text-[#1A237E] dark:hover:text-white relative">
+              <button onClick={() => setCurrentPage(Page.Wallet)} className="p-2 text-slate-400 hover:text-[#1A237E] dark:hover:text-white transition-colors"><Wallet className="w-6 h-6" /></button>
+              <button onClick={() => setCurrentPage(Page.Cart)} className="p-2 text-slate-400 hover:text-[#1A237E] dark:hover:text-white relative transition-colors">
                 <ShoppingBag className="w-6 h-6" />
-                {cartCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full animate-bounce">{cartCount}</span>}
+                {cartCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full animate-bounce shadow-sm">{cartCount}</span>}
               </button>
               {user ? (
                 <div className="relative">
-                  <button onClick={() => setCurrentPage(Page.Wallet)} className="bg-[#1A237E] text-white p-2 rounded-full hover:bg-opacity-90 transition-all shadow-md">
+                  <button onClick={() => setCurrentPage(Page.Wallet)} className="bg-[#1A237E] text-white p-2 rounded-full hover:bg-opacity-90 transition-all shadow-md border-2 border-white dark:border-slate-800">
                     <User className="w-5 h-5" />
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <button onClick={onLoginClick} className="px-5 py-2 text-[#1A237E] dark:text-white rounded-full font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">Login</button>
-                  <button onClick={onSignupClick} className="px-5 py-2 bg-[#1A237E] text-white rounded-full font-bold text-sm hover:bg-opacity-90 transition-all shadow-lg flex items-center gap-2">
-                    Signup
-                  </button>
+                  <button onClick={onLoginClick} className="px-5 py-2 text-[#1A237E] dark:text-white rounded-full font-black text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-all uppercase italic">Login</button>
+                  <button onClick={onSignupClick} className="px-5 py-2 bg-[#1A237E] text-[#FFD600] rounded-full font-black text-sm hover:bg-opacity-90 transition-all shadow-lg uppercase italic border-2 border-[#FFD600]">Signup</button>
                 </div>
               )}
             </div>
@@ -114,10 +117,11 @@ const Navbar: React.FC<NavbarProps> = ({
 
       {isMenuOpen && (
         <div className="lg:hidden bg-white dark:bg-slate-900 border-t p-6 space-y-4 shadow-2xl animate-in slide-in-from-top duration-300">
-          <button onClick={() => {setCurrentPage(Page.Home); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-bold dark:text-white">{language === 'bn' ? 'হোম' : 'Home'}</button>
-          <button onClick={() => {setCurrentPage(Page.Shop); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-bold dark:text-white">{language === 'bn' ? 'শপ' : 'Shop'}</button>
-          <button onClick={() => {setCurrentPage(Page.SupportChat); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-bold dark:text-white">{language === 'bn' ? 'লাইভ সাপোর্ট' : 'Live Support'}</button>
-          <button onClick={() => {setCurrentPage(Page.PostAd); setIsMenuOpen(false);}} className="block w-full py-4 bg-[#FFD600] text-[#1A237E] rounded-2xl font-bold">{language === 'bn' ? 'অ্যাড দিন' : 'Post Ad'}</button>
+          <button onClick={() => {setCurrentPage(Page.Home); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">হোম</button>
+          <button onClick={() => {setCurrentPage(Page.Shop); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">শপ</button>
+          <button onClick={() => {setCurrentPage(Page.AdminLogin); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black text-[#1A237E] dark:text-[#FFD600] uppercase italic tracking-tighter">অ্যাডমিন পোর্টাল</button>
+          <button onClick={() => {setCurrentPage(Page.SupportChat); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">লাইভ সাপোর্ট</button>
+          <button onClick={() => {setCurrentPage(Page.PostAd); setIsMenuOpen(false);}} className="block w-full py-4 bg-[#FFD600] text-[#1A237E] rounded-2xl font-black uppercase italic tracking-tighter shadow-lg">অ্যাড দিন</button>
           <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
              {user ? (
                <button onClick={() => {setCurrentPage(Page.Wallet); setIsMenuOpen(false);}} className="flex-1 py-3 bg-[#1A237E] text-white rounded-xl font-bold flex items-center justify-center gap-2">
@@ -125,8 +129,8 @@ const Navbar: React.FC<NavbarProps> = ({
                </button>
              ) : (
                <>
-                 <button onClick={() => { onLoginClick(); setIsMenuOpen(false); }} className="flex-1 py-3 border border-[#1A237E] text-[#1A237E] dark:text-white rounded-xl font-bold">Login</button>
-                 <button onClick={() => { onSignupClick(); setIsMenuOpen(false); }} className="flex-1 py-3 bg-[#1A237E] text-white rounded-xl font-bold">Signup</button>
+                 <button onClick={() => { onLoginClick(); setIsMenuOpen(false); }} className="flex-1 py-3 border border-[#1A237E] text-[#1A237E] dark:text-white rounded-xl font-bold uppercase italic">Login</button>
+                 <button onClick={() => { onSignupClick(); setIsMenuOpen(false); }} className="flex-1 py-3 bg-[#1A237E] text-white rounded-xl font-bold uppercase italic">Signup</button>
                </>
              )}
           </div>
