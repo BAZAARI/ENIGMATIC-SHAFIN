@@ -1,19 +1,20 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Rocket, ShieldCheck, CreditCard, ChevronRight, Camera, CheckCircle, Loader2, Zap, Package, Search } from 'lucide-react';
-import { BOOST_PLANS } from '../constants';
-import { BoostRequest, Product } from '../types';
+import { Rocket, ShieldCheck, CreditCard, ChevronRight, Camera, CheckCircle, Loader2, Zap, Package, Search, Smartphone, Image as ImageIcon, X } from 'lucide-react';
+import { BoostRequest, Product, BoostPlan, Language } from '../types';
 
 interface BoostPanelProps {
   onBoostSubmit: (request: BoostRequest) => void;
   initialProduct: Product | null;
   userProducts: Product[];
+  plans: BoostPlan[];
+  language: Language;
 }
 
-const BoostPanel: React.FC<BoostPanelProps> = ({ onBoostSubmit, initialProduct, userProducts }) => {
+const BoostPanel: React.FC<BoostPanelProps> = ({ onBoostSubmit, initialProduct, userProducts, plans, language }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(initialProduct);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'bKash' | 'Nagad' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'bKash' | 'Nagad' | 'Rocket' | null>(null);
   const [trxId, setTrxId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
   const [screenshot, setScreenshot] = useState<string | null>(null);
@@ -43,16 +44,17 @@ const BoostPanel: React.FC<BoostPanelProps> = ({ onBoostSubmit, initialProduct, 
     setPaymentMethod('bKash');
     setSenderNumber('01516595597');
     setTrxId('TRX' + Math.random().toString(36).substr(2, 6).toUpperCase());
-    setScreenshot('https://picsum.photos/seed/payment/200/300'); // Mock image
+    setScreenshot('https://picsum.photos/seed/payment/200/300'); 
+    if (plans.length > 0) setSelectedPlan(plans[0].id);
   };
 
   const handleSubmit = () => {
     if (!selectedProduct) {
-      alert('অনুগ্রহ করে একটি পণ্য সিলেক্ট করুন।');
+      alert(language === 'bn' ? 'অনুগ্রহ করে একটি পণ্য সিলেক্ট করুন।' : 'Please select a product.');
       return;
     }
     if (!trxId || !senderNumber || !selectedPlan || !screenshot || !paymentMethod) {
-      alert('অনুগ্রহ করে পেমেন্ট মেথড সহ সকল তথ্য এবং স্ক্রিনশট প্রদান করুন।');
+      alert(language === 'bn' ? 'অনুগ্রহ করে পেমেন্ট মেথড সহ সকল তথ্য এবং স্ক্রিনশট প্রদান করুন।' : 'Please provide all payment info and screenshot.');
       return;
     }
 
@@ -74,15 +76,6 @@ const BoostPanel: React.FC<BoostPanelProps> = ({ onBoostSubmit, initialProduct, 
       onBoostSubmit(request);
       setIsVerifying(false);
       setIsSubmitted(true);
-      
-      setTimeout(() => {
-        setSelectedPlan(null);
-        setPaymentMethod(null);
-        setTrxId('');
-        setSenderNumber('');
-        setScreenshot(null);
-        setIsSubmitted(false);
-      }, 5000);
     }, 2000);
   };
 
@@ -93,21 +86,27 @@ const BoostPanel: React.FC<BoostPanelProps> = ({ onBoostSubmit, initialProduct, 
   return (
     <div className="py-20 max-w-5xl mx-auto px-4">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#1A237E] dark:text-white mb-4">অ্যাড বুস্ট করুন</h2>
-        <p className="text-slate-500">আপনার পণ্যটি দ্রুত বিক্রি করতে আজই বুস্ট করুন। সাধারণ বিজ্ঞাপনের চেয়ে ১০ গুণ বেশি রিচ!</p>
+        <h2 className="text-3xl md:text-5xl font-black text-[#1A237E] dark:text-white mb-4 uppercase italic tracking-tighter">
+          {language === 'bn' ? 'অ্যাড বুস্ট করুন' : 'Boost Your Post'}
+        </h2>
+        <p className="text-slate-500 font-medium">
+          {language === 'bn' 
+            ? '১০ গুণ বেশি কাস্টমারের কাছে পৌঁছাতে আপনার বিজ্ঞাপনটি বুস্ট করুন।' 
+            : 'Get 10x more reach by boosting your product today.'}
+        </p>
       </div>
 
       {!selectedProduct ? (
-        <div className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[40px] shadow-2xl border border-slate-100 dark:border-slate-700 animate-in fade-in duration-500">
+        <div className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[3rem] shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in duration-500">
           <div className="mb-8">
-            <h3 className="text-xl font-bold text-[#1A237E] dark:text-white mb-6 flex items-center gap-3">
-              <Package className="w-6 h-6" /> বুস্ট করার জন্য পণ্য সিলেক্ট করুন
+            <h3 className="text-xl font-bold text-[#1A237E] dark:text-white mb-6 flex items-center gap-3 uppercase">
+              <Package className="w-6 h-6" /> {language === 'bn' ? 'পণ্য সিলেক্ট করুন' : 'Select Product'}
             </h3>
             <div className="relative mb-8">
               <input 
                 type="text" 
-                placeholder="আপনার পোস্ট খুঁজুন..."
-                className="w-full pl-12 pr-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl outline-none border-2 border-transparent focus:border-[#1A237E] transition-all"
+                placeholder={language === 'bn' ? 'আপনার পোস্ট খুঁজুন...' : 'Find your post...'}
+                className="w-full pl-12 pr-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl outline-none border-2 border-transparent focus:border-[#1A237E] transition-all font-bold"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -119,171 +118,134 @@ const BoostPanel: React.FC<BoostPanelProps> = ({ onBoostSubmit, initialProduct, 
                 <div 
                   key={p.id}
                   onClick={() => setSelectedProduct(p)}
-                  className="flex items-center gap-4 p-4 border-2 border-slate-50 dark:border-slate-700 rounded-2xl cursor-pointer hover:border-[#1A237E] hover:bg-slate-50 dark:hover:bg-slate-900 transition-all group"
+                  className="flex items-center gap-4 p-4 border-2 border-slate-50 dark:border-slate-800 rounded-2xl cursor-pointer hover:border-[#1A237E] hover:bg-slate-50 dark:hover:bg-slate-900 transition-all group"
                 >
-                  <img src={p.image} className="w-16 h-16 rounded-xl object-cover" />
+                  <img src={p.image} className="w-16 h-16 rounded-xl object-cover border border-slate-100 dark:border-slate-700 shadow-sm" />
                   <div className="flex-1">
                     <h4 className="font-bold text-slate-800 dark:text-white group-hover:text-[#1A237E] transition-colors">{p.name}</h4>
-                    <p className="text-sm text-[#1A237E] dark:text-[#FFD600] font-bold">৳{p.price}</p>
+                    <p className="text-sm text-[#1A237E] dark:text-[#FFD600] font-black">৳{p.price}</p>
                   </div>
                   <ChevronRight className="text-slate-300 group-hover:translate-x-1 transition-transform" />
                 </div>
               ))}
-              {filteredProducts.length === 0 && (
-                <div className="col-span-full py-10 text-center text-slate-400">
-                  কোন পণ্য খুঁজে পাওয়া যায়নি।
-                </div>
-              )}
             </div>
           </div>
         </div>
       ) : (
         <>
-          <div className="mb-12 flex items-center justify-between bg-blue-50 dark:bg-slate-800 p-6 rounded-3xl border border-blue-100 dark:border-slate-700 animate-in slide-in-from-top-4 duration-500">
-            <div className="flex items-center gap-4">
-              <img src={selectedProduct.image} className="w-20 h-20 rounded-2xl object-cover shadow-lg" />
+          <div className="mb-12 flex items-center justify-between bg-[#1A237E] p-8 rounded-[3rem] text-white shadow-2xl animate-in slide-in-from-top-6 duration-500">
+            <div className="flex items-center gap-6">
+              <img src={selectedProduct.image} className="w-24 h-24 rounded-2xl object-cover border-4 border-white/20 shadow-xl" />
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#1A237E] dark:text-[#FFD600] mb-1 block">নির্বাচিত পণ্য</span>
-                <h3 className="text-xl font-bold dark:text-white">{selectedProduct.name}</h3>
-                <p className="font-bold text-[#1A237E] dark:text-[#FFD600]">৳{selectedProduct.price}</p>
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#FFD600] mb-1 block">
+                  Selected Post
+                </span>
+                <h3 className="text-2xl font-black">{selectedProduct.name}</h3>
+                <p className="font-bold text-blue-200">৳{selectedProduct.price}</p>
               </div>
             </div>
             {!initialProduct && (
-              <button 
-                onClick={() => setSelectedProduct(null)}
-                className="text-sm font-bold text-[#1A237E] dark:text-white hover:underline px-4 py-2"
-              >
-                পরিবর্তন করুন
-              </button>
+              <button onClick={() => setSelectedProduct(null)} className="px-6 py-2 bg-white/10 rounded-xl text-xs font-black uppercase hover:bg-white/20 transition-all">Change</button>
             )}
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {BOOST_PLANS.map(plan => (
+          <div className="grid md:grid-cols-4 gap-6 mb-16">
+            {plans.map(plan => (
               <div 
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
-                className={`p-8 rounded-3xl border-2 transition-all cursor-pointer text-center relative overflow-hidden ${
-                  selectedPlan === plan.id ? 'border-[#1A237E] bg-blue-50 dark:bg-slate-800 shadow-xl scale-105' : 'border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-200'
+                className={`p-8 rounded-[2.5rem] border-2 transition-all cursor-pointer text-center relative overflow-hidden group ${
+                  selectedPlan === plan.id ? 'border-[#FFD600] bg-white dark:bg-slate-800 shadow-2xl scale-105' : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-200'
                 }`}
               >
-                {plan.id === '7d' && (
-                  <div className="absolute top-4 -right-12 bg-[#FFD600] text-[#1A237E] text-[10px] font-bold py-1 px-12 rotate-45">POPULAR</div>
-                )}
-                <Rocket className={`w-12 h-12 mx-auto mb-6 ${selectedPlan === plan.id ? 'text-[#1A237E] dark:text-[#FFD600]' : 'text-slate-300'}`} />
-                <h3 className="text-2xl font-bold text-[#1A237E] dark:text-white mb-2">{plan.days} দিন</h3>
-                <p className="text-3xl font-black text-[#1A237E] dark:text-[#FFD600] mb-4">৳{plan.price}</p>
-                <p className="text-sm text-slate-500">{plan.description}</p>
-                <div className={`mt-6 w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center ${
-                  selectedPlan === plan.id ? 'bg-[#1A237E] border-[#1A237E] dark:bg-[#FFD600] dark:border-[#FFD600]' : 'border-slate-200'
-                }`}>
-                  {selectedPlan === plan.id && <ShieldCheck className="w-5 h-5 text-white dark:text-[#1A237E]" />}
+                <div className={`w-14 h-14 mx-auto mb-6 rounded-2xl flex items-center justify-center transition-colors ${selectedPlan === plan.id ? 'bg-[#1A237E]' : 'bg-slate-50 dark:bg-slate-800'}`}>
+                  <Rocket className={`w-8 h-8 ${selectedPlan === plan.id ? 'text-[#FFD600]' : 'text-slate-300'}`} />
                 </div>
+                <h3 className="text-xl font-black text-[#1A237E] dark:text-white mb-2">{plan.days} {language === 'bn' ? 'দিন' : 'Days'}</h3>
+                <p className="text-2xl font-black text-[#1A237E] dark:text-[#FFD600] mb-4">৳{plan.price}</p>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{plan.description}</p>
+                
+                {selectedPlan === plan.id && <div className="absolute top-0 right-0 p-2"><CheckCircle className="text-[#1A237E] dark:text-[#FFD600] w-6 h-6" /></div>}
               </div>
             ))}
           </div>
 
           {selectedPlan && !isSubmitted && (
-            <div className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[40px] shadow-2xl border border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex justify-between items-center mb-8">
-                <h4 className="text-xl font-bold text-[#1A237E] dark:text-white flex items-center">
-                  <CreditCard className="mr-3 w-6 h-6 text-[#FFD600]" /> পেমেন্ট প্রক্রিয়া
+            <div className="bg-white dark:bg-slate-800 p-10 md:p-16 rounded-[4rem] shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-6 duration-500">
+              <div className="flex justify-between items-center mb-10">
+                <h4 className="text-2xl font-black text-[#1A237E] dark:text-white flex items-center gap-3 uppercase italic tracking-tighter">
+                  <CreditCard className="text-[#FFD600]" /> Payment Gateway
                 </h4>
-                <button 
-                  type="button"
-                  onClick={autofillData}
-                  className="text-xs font-bold bg-[#FFD600]/10 text-[#1A237E] dark:text-[#FFD600] px-4 py-2 rounded-full border border-[#FFD600]/30 hover:bg-[#FFD600] hover:text-[#1A237E] transition-all flex items-center gap-2"
-                >
-                  <Zap className="w-3 h-3 fill-current" /> টেস্ট ডাটা পূরণ করুন
-                </button>
+                <button onClick={autofillData} className="text-[10px] font-black bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-[#FFD600] transition-all uppercase tracking-widest">Test Data</button>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-12">
+              <div className="grid md:grid-cols-2 gap-16">
                 <div className="space-y-4">
-                  <button 
-                    type="button"
-                    onClick={() => setPaymentMethod('bKash')}
-                    className={`w-full p-4 rounded-2xl flex justify-between items-center border-2 transition-all ${
-                      paymentMethod === 'bKash' ? 'border-pink-500 bg-pink-50 dark:bg-pink-900/20 shadow-md scale-[1.02]' : 'border-pink-100 dark:border-pink-900/10 bg-white dark:bg-slate-900'
-                    }`}
-                  >
-                    <span className={`font-bold ${paymentMethod === 'bKash' ? 'text-pink-600' : 'text-pink-400'}`}>bKash (Personal)</span>
-                    <span className="font-mono font-bold text-[#1A237E] dark:text-white">01516-595597</span>
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => setPaymentMethod('Nagad')}
-                    className={`w-full p-4 rounded-2xl flex justify-between items-center border-2 transition-all ${
-                      paymentMethod === 'Nagad' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 shadow-md scale-[1.02]' : 'border-orange-100 dark:border-orange-900/10 bg-white dark:bg-slate-900'
-                    }`}
-                  >
-                    <span className={`font-bold ${paymentMethod === 'Nagad' ? 'text-orange-600' : 'text-orange-400'}`}>Nagad (Personal)</span>
-                    <span className="font-mono font-bold text-[#1A237E] dark:text-white">01516-595597</span>
-                  </button>
-                  <p className="text-xs text-slate-400 mt-4 italic">
-                    * ওপরের যেকোনো মেথড সিলেক্ট করে 'Send Money' করুন এবং নিচের তথ্য দিন।
-                  </p>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">আপনার {paymentMethod || 'বিকাশ/নগদ'} নাম্বার</label>
-                      <input 
-                        type="text" 
-                        placeholder="01XXXXX..."
-                        className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-900 dark:text-white border-2 border-transparent focus:border-[#1A237E] rounded-2xl outline-none transition-all font-mono"
-                        value={senderNumber}
-                        onChange={(e) => setSenderNumber(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">ট্রানজ্যাকশন আইডি (TrxID)</label>
-                      <input 
-                        type="text" 
-                        placeholder="যেমন: AH78JK90"
-                        className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-900 dark:text-white border-2 border-transparent focus:border-[#1A237E] rounded-2xl outline-none transition-all font-mono"
-                        value={trxId}
-                        onChange={(e) => setTrxId(e.target.value)}
-                      />
-                    </div>
+                  <div onClick={() => setPaymentMethod('bKash')} className={`p-6 rounded-2xl flex justify-between items-center border-2 cursor-pointer transition-all ${paymentMethod === 'bKash' ? 'border-pink-500 bg-pink-50 dark:bg-pink-900/10' : 'border-slate-100 dark:border-slate-900'}`}>
+                    <span className="font-black text-pink-600">bKash (Per)</span>
+                    <span className="font-black dark:text-white">01516-595597</span>
+                  </div>
+                  <div onClick={() => setPaymentMethod('Nagad')} className={`p-6 rounded-2xl flex justify-between items-center border-2 cursor-pointer transition-all ${paymentMethod === 'Nagad' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-slate-100 dark:border-slate-900'}`}>
+                    <span className="font-black text-orange-600">Nagad (Per)</span>
+                    <span className="font-black dark:text-white">01516-595597</span>
+                  </div>
+                  <div onClick={() => setPaymentMethod('Rocket')} className={`p-6 rounded-2xl flex justify-between items-center border-2 cursor-pointer transition-all ${paymentMethod === 'Rocket' ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/10' : 'border-slate-100 dark:border-slate-900'}`}>
+                    <span className="font-black text-purple-600 flex items-center gap-2"><Smartphone className="w-5 h-5" /> Rocket</span>
+                    <span className="font-black dark:text-white">01516-595597-4</span>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">পেমেন্ট স্ক্রিনশট (SS)</label>
+                  {/* Missing Fields added here */}
+                  <div className="pt-4">
+                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Your Payment Screenshot</label>
                     <div 
                       onClick={() => fileInputRef.current?.click()}
-                      className={`w-full h-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all ${
-                        screenshot ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : 'border-slate-200 dark:border-slate-700 hover:border-[#1A237E]'
-                      }`}
+                      className="aspect-[16/9] bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl flex flex-col items-center justify-center cursor-pointer hover:border-[#1A237E] transition-all overflow-hidden"
                     >
                       {screenshot ? (
-                        <img src={screenshot} className="h-full w-full object-contain p-2 rounded-2xl" alt="SS" />
+                        <div className="relative w-full h-full">
+                          <img src={screenshot} className="w-full h-full object-cover" />
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setScreenshot(null); }}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow-lg"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
                       ) : (
                         <>
-                          <Camera className="text-slate-400 mb-2" />
-                          <span className="text-xs font-bold text-slate-400">স্ক্রিনশট আপলোড করুন</span>
+                          <ImageIcon className="text-slate-300 w-10 h-10 mb-2" />
+                          <span className="text-[10px] font-bold text-slate-400">Click to Upload</span>
                         </>
                       )}
                     </div>
                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
                   </div>
+                </div>
 
-                  <button 
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isVerifying}
-                    className="w-full py-5 bg-[#1A237E] text-[#FFD600] font-black rounded-2xl hover:scale-[1.02] shadow-xl transition-all flex items-center justify-center text-lg disabled:opacity-70"
-                  >
-                    {isVerifying ? (
-                      <>
-                        <Loader2 className="mr-2 w-6 h-6 animate-spin" /> পেমেন্ট যাচাই করা হচ্ছে...
-                      </>
-                    ) : (
-                      <>
-                        পেমেন্ট ভেরিফাই করুন <ChevronRight className="ml-2 w-6 h-6" />
-                      </>
-                    )}
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-xs font-black text-slate-500 uppercase mb-2">Sender Phone Number</label>
+                    <input 
+                      type="text" 
+                      placeholder="01712xxxxxx" 
+                      className="w-full px-8 py-5 bg-slate-50 dark:bg-slate-900 dark:text-white border-2 border-transparent focus:border-[#1A237E] rounded-2xl outline-none font-black text-xl" 
+                      value={senderNumber} 
+                      onChange={(e) => setSenderNumber(e.target.value)} 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black text-slate-500 uppercase mb-2">Transaction ID (TrxID)</label>
+                    <input 
+                      type="text" 
+                      placeholder="Enter TrxID" 
+                      className="w-full px-8 py-5 bg-slate-50 dark:bg-slate-900 dark:text-white border-2 border-transparent focus:border-[#1A237E] rounded-2xl outline-none font-black text-xl" 
+                      value={trxId} 
+                      onChange={(e) => setTrxId(e.target.value)} 
+                    />
+                  </div>
+                  
+                  <button onClick={handleSubmit} disabled={isVerifying} className="w-full py-6 bg-[#1A237E] text-[#FFD600] font-black rounded-3xl shadow-2xl hover:scale-[1.01] transition-all text-xl uppercase italic">
+                    {isVerifying ? <Loader2 className="animate-spin mx-auto" /> : 'Confirm Boost'}
                   </button>
                 </div>
               </div>
@@ -293,14 +255,10 @@ const BoostPanel: React.FC<BoostPanelProps> = ({ onBoostSubmit, initialProduct, 
       )}
 
       {isSubmitted && (
-        <div className="bg-white dark:bg-slate-800 p-12 rounded-[40px] shadow-2xl border border-green-100 dark:border-green-900/30 text-center animate-in zoom-in duration-500">
-          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="text-white w-10 h-10" />
-          </div>
-          <h3 className="text-3xl font-black text-[#1A237E] dark:text-white mb-4">রিকোয়েস্ট জমা হয়েছে!</h3>
-          <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-            আপনার পেমেন্ট ভেরিফাই করা হচ্ছে। পরবর্তী ২ ঘণ্টার মধ্যে আপনার অ্যাডটি বুস্ট করা হবে। ধন্যবাদ।
-          </p>
+        <div className="bg-white dark:bg-slate-800 p-16 rounded-[4rem] shadow-2xl text-center border-4 border-green-500 animate-in zoom-in">
+          <CheckCircle className="text-green-500 w-24 h-24 mx-auto mb-8" />
+          <h3 className="text-4xl font-black text-[#1A237E] dark:text-white mb-6 uppercase tracking-tighter italic">Boost Requested!</h3>
+          <p className="text-slate-500 font-bold max-w-md mx-auto">অ্যাডমিন এটি যাচাই করার পর আপনার পণ্যটি ২ ঘণ্টার মধ্যে বুস্ট করা হবে।</p>
         </div>
       )}
     </div>

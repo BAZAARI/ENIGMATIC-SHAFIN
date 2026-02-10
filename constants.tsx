@@ -13,9 +13,10 @@ export const COLORS = {
 };
 
 export const BOOST_PLANS: BoostPlan[] = [
-  { id: '3d', days: 3, price: 150, description: 'দ্রুত বিক্রির জন্য বেস্ট' },
+  { id: '3d', days: 3, price: 150, description: 'দ্রুত বিক্রির জন্য সেরা' },
   { id: '7d', days: 7, price: 299, description: 'সবচেয়ে জনপ্রিয় চয়েস' },
-  { id: '15d', days: 15, price: 550, description: 'ম্যাক্সিমাম কাস্টমার রিচ' }
+  { id: '15d', days: 15, price: 550, description: 'ম্যাক্সিমাম কাস্টমার রিচ' },
+  { id: '30d', days: 30, price: 999, description: 'দীর্ঘমেয়াদী বিজ্ঞাপনের জন্য' }
 ];
 
 export const VERIFY_PLANS: VerifyPlan[] = [
@@ -32,7 +33,6 @@ export const CATEGORIES: Category[] = [
   { id: 'lifestyle', name: 'লাইফস্টাইল', icon: '🏠' },
 ];
 
-// Removed all demo products so user can start selling fresh
 export const PRODUCTS: Product[] = [];
 
 export const TRUST_BADGES = [

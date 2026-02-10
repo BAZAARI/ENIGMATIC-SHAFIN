@@ -6,6 +6,7 @@ export interface Product {
   originalPrice: number;
   image: string;
   vendor: string;
+  vendorEmail?: string; // Track who posted it
   category: string;
   rating: number;
   reviews: number;
@@ -18,12 +19,13 @@ export interface Product {
 
 export interface User {
   name: string;
-  username: string;
   email: string;
   isVerified: boolean;
   postCountToday: number;
   profilePic?: string;
 }
+
+export type Language = 'bn' | 'en';
 
 export interface SupportMessage {
   id: string;
@@ -33,6 +35,14 @@ export interface SupportMessage {
   timestamp: string;
   isAdmin: boolean;
   isRead: boolean;
+}
+
+export interface Message {
+  id: number | string;
+  sender: string;
+  text: string;
+  time: string;
+  isMe: boolean;
 }
 
 export interface BoostPlan {
@@ -52,6 +62,7 @@ export interface VerifyPlan {
 export interface AdminSettings {
   freePostLimit: number;
   extraPostPrice: number;
+  extraImagePrice: number; // Added for the 50 taka requirement
   boostPlans: BoostPlan[];
   verifyPlans: VerifyPlan[];
   verificationPrice?: number;
@@ -66,14 +77,6 @@ export interface Category {
   id: string;
   name: string;
   icon: string;
-}
-
-export interface Message {
-  id: number;
-  sender: string;
-  text: string;
-  time: string;
-  isMe: boolean;
 }
 
 export enum Page {
@@ -100,7 +103,7 @@ export interface BoostRequest {
   id: string;
   planId: string;
   productId?: number;
-  paymentMethod: 'bKash' | 'Nagad';
+  paymentMethod: 'bKash' | 'Nagad' | 'Rocket';
   senderNumber: string;
   trxId: string;
   screenshot: string;
@@ -116,7 +119,7 @@ export interface PostRequest {
   timestamp: string;
   isPaid: boolean;
   trxId?: string;
-  paymentReason?: string;
+  paymentReason?: 'extra_posts' | 'extra_images';
 }
 
 export interface VerificationRequest {
@@ -125,17 +128,5 @@ export interface VerificationRequest {
   trxId: string;
   userEmail: string;
   status: 'pending' | 'approved' | 'rejected';
-  timestamp: string;
-}
-
-export interface Order {
-  id: string;
-  items: CartItem[];
-  total: number;
-  customerName: string;
-  address: string;
-  phone: string;
-  paymentMethod: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
   timestamp: string;
 }

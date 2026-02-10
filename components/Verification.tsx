@@ -1,15 +1,16 @@
 
 import React, { useState } from 'react';
 import { ShieldCheck, Check, CreditCard, Clock, CheckCircle, Loader2, Zap } from 'lucide-react';
-import { VERIFY_PLANS } from '../constants';
-import { VerificationRequest } from '../types';
+import { VerificationRequest, VerifyPlan, Language } from '../types';
 
 interface VerificationProps {
   userEmail: string;
   onVerifySubmit: (request: VerificationRequest) => void;
+  plans: VerifyPlan[];
+  language: Language;
 }
 
-const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }) => {
+const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit, plans, language }) => {
   const [selected, setSelected] = useState<string | null>(null);
   const [trx, setTrx] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -17,16 +18,16 @@ const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }
 
   const autofillData = () => {
     setTrx('VRF' + Math.random().toString(36).substr(2, 6).toUpperCase());
-    if (!selected) setSelected('6m');
+    if (!selected && plans.length > 0) setSelected(plans[0].id);
   };
 
   const handleSubmit = () => {
     if (!selected || !trx) {
-      alert('প্ল্যান সিলেক্ট করুন এবং ট্রানজ্যাকশন আইডি দিন।');
+      alert(language === 'bn' ? 'প্ল্যান সিলেক্ট করুন এবং ট্রানজ্যাকশন আইডি দিন।' : 'Select plan and provide transaction ID.');
       return;
     }
     if (!userEmail) {
-      alert('আগে লগইন করুন!');
+      alert(language === 'bn' ? 'আগে লগইন করুন!' : 'Please login first!');
       return;
     }
 
@@ -55,13 +56,15 @@ const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }
           <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="text-white w-10 h-10" />
           </div>
-          <h3 className="text-3xl font-black text-[#1A237E] dark:text-white mb-4">রিকোয়েস্ট জমা হয়েছে!</h3>
+          <h3 className="text-3xl font-black text-[#1A237E] dark:text-white mb-4">
+            {language === 'bn' ? 'রিকোয়েস্ট জমা হয়েছে!' : 'Request Submitted!'}
+          </h3>
           <p className="text-slate-600 dark:text-slate-400 mb-6 text-lg">
-            আপনার ভেরিফিকেশন পেমেন্ট যাচাই করা হচ্ছে।
+            {language === 'bn' ? 'আপনার ভেরিফিকেশন পেমেন্ট যাচাই করা হচ্ছে।' : 'Your verification payment is being verified.'}
           </p>
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800">
             <p className="text-[#1A237E] dark:text-[#FFD600] font-bold">
-              আগামী ৩ ঘণ্টার মধ্যে আপনার অ্যাকাউন্টে ভেরিফিকেশন ব্যাজ যুক্ত হবে।
+              {language === 'bn' ? 'আগামী ৩ ঘণ্টার মধ্যে আপনার অ্যাকাউন্টে ভেরিফিকেশন ব্যাজ যুক্ত হবে।' : 'Verification badge will be added to your account within 3 hours.'}
             </p>
           </div>
         </div>
@@ -72,12 +75,18 @@ const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }
   return (
     <div className="py-20 max-w-6xl mx-auto px-4">
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-5xl font-bold text-[#1A237E] dark:text-white mb-4">সেলার ভেরিফিকেশন</h2>
-        <p className="text-slate-500 max-w-2xl mx-auto">প্রিমিয়াম ব্যাজ নিয়ে বায়ারদের কাছে নিজের বিশ্বাসযোগ্যতা বাড়ান। ভেরিফাইড সেলারদের পণ্য দ্রুত বিক্রি হয়!</p>
+        <h2 className="text-3xl md:text-5xl font-bold text-[#1A237E] dark:text-white mb-4">
+          {language === 'bn' ? 'সেলার ভেরিফিকেশন' : 'Seller Verification'}
+        </h2>
+        <p className="text-slate-500 max-w-2xl mx-auto">
+          {language === 'bn' 
+            ? 'প্রিমিয়াম ব্যাজ নিয়ে বায়ারদের কাছে নিজের বিশ্বাসযোগ্যতা বাড়ান। ভেরিফাইড সেলারদের পণ্য দ্রুত বিক্রি হয়!' 
+            : 'Build trust with buyers using a premium badge. Verified sellers sell products faster!'}
+        </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-8 mb-16">
-        {VERIFY_PLANS.map(plan => (
+        {plans.map(plan => (
           <div 
             key={plan.id}
             onClick={() => setSelected(plan.id)}
@@ -93,15 +102,17 @@ const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }
             <p className="text-sm text-slate-500 mb-8">{plan.desc}</p>
             
             <ul className="space-y-3 w-full mb-10">
-              <li className="flex items-center text-sm text-slate-600 dark:text-slate-400"><Check className="w-4 h-4 mr-2 text-green-500" /> গোল্ডেন ভেরিফাইড ব্যাজ</li>
-              <li className="flex items-center text-sm text-slate-600 dark:text-slate-400"><Check className="w-4 h-4 mr-2 text-green-500" /> সার্চে অগ্রধিকার</li>
-              <li className="flex items-center text-sm text-slate-600 dark:text-slate-400"><Check className="w-4 h-4 mr-2 text-green-500" /> আনলিমিটেড অ্যাড পোস্ট</li>
+              <li className="flex items-center text-sm text-slate-600 dark:text-slate-400"><Check className="w-4 h-4 mr-2 text-green-500" /> {language === 'bn' ? 'গোল্ডেন ভেরিফাইড ব্যাজ' : 'Golden Verified Badge'}</li>
+              <li className="flex items-center text-sm text-slate-600 dark:text-slate-400"><Check className="w-4 h-4 mr-2 text-green-500" /> {language === 'bn' ? 'সার্চে অগ্রধিকার' : 'Priority in Search'}</li>
+              <li className="flex items-center text-sm text-slate-600 dark:text-slate-400"><Check className="w-4 h-4 mr-2 text-green-500" /> {language === 'bn' ? 'আনলিমিটেড অ্যাড পোস্ট' : 'Unlimited Ad Posts'}</li>
             </ul>
 
             <div className={`mt-auto w-full py-3 rounded-2xl font-bold text-center transition-all ${
               selected === plan.id ? 'bg-[#1A237E] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
             }`}>
-              {selected === plan.id ? 'সিলেক্ট করা হয়েছে' : 'প্ল্যানটি বেছে নিন'}
+              {selected === plan.id 
+                ? (language === 'bn' ? 'সিলেক্ট করা হয়েছে' : 'Selected') 
+                : (language === 'bn' ? 'প্ল্যানটি বেছে নিন' : 'Choose Plan')}
             </div>
           </div>
         ))}
@@ -111,14 +122,14 @@ const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }
         <div className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[40px] shadow-2xl border border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-bottom-4">
           <div className="flex justify-between items-center mb-8">
             <h4 className="text-xl font-bold text-[#1A237E] dark:text-white flex items-center">
-              <CreditCard className="mr-3 w-6 h-6 text-[#FFD600]" /> পেমেন্ট ডিটেইলস
+              <CreditCard className="mr-3 w-6 h-6 text-[#FFD600]" /> {language === 'bn' ? 'পেমেন্ট ডিটেইলস' : 'Payment Details'}
             </h4>
             <button 
               type="button"
               onClick={autofillData}
               className="text-xs font-bold bg-[#FFD600]/10 text-[#1A237E] dark:text-[#FFD600] px-4 py-2 rounded-full border border-[#FFD600]/30 hover:bg-[#FFD600] hover:text-[#1A237E] transition-all flex items-center gap-2"
             >
-              <Zap className="w-3 h-3 fill-current" /> টেস্ট ডাটা পূরণ করুন
+              <Zap className="w-3 h-3 fill-current" /> {language === 'bn' ? 'টেস্ট ডাটা পূরণ করুন' : 'Fill Test Data'}
             </button>
           </div>
 
@@ -145,7 +156,7 @@ const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Transaction ID (TrxID)</label>
                 <input 
                   type="text" 
-                  placeholder="পেমেন্ট করার পর আইডি দিন"
+                  placeholder={language === 'bn' ? 'পেমেন্ট করার পর আইডি দিন' : 'Enter ID after payment'}
                   className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-[#1A237E] rounded-2xl outline-none dark:text-white font-mono"
                   value={trx}
                   onChange={(e) => setTrx(e.target.value)}
@@ -159,14 +170,14 @@ const Verification: React.FC<VerificationProps> = ({ userEmail, onVerifySubmit }
               >
                 {isVerifying ? (
                   <>
-                    <Loader2 className="mr-2 w-6 h-6 animate-spin" /> পেমেন্ট যাচাই করা হচ্ছে...
+                    <Loader2 className="mr-2 w-6 h-6 animate-spin" /> {language === 'bn' ? 'পেমেন্ট যাচাই করা হচ্ছে...' : 'Verifying Payment...'}
                   </>
                 ) : (
-                  <>ভেরিফিকেশন রিকোয়েস্ট পাঠান</>
+                  <>{language === 'bn' ? 'ভেরিফিকেশন রিকোয়েস্ট পাঠান' : 'Send Verification Request'}</>
                 )}
               </button>
               <div className="flex items-center justify-center text-[10px] text-slate-400 italic">
-                <Clock className="w-3 h-3 mr-1" /> ২৪ ঘণ্টার মধ্যে ব্যাজ অ্যাক্টিভ করা হবে
+                <Clock className="w-3 h-3 mr-1" /> {language === 'bn' ? '২৪ ঘণ্টার মধ্যে ব্যাজ অ্যাক্টিভ করা হবে' : 'Badge will be active within 24 hours'}
               </div>
             </div>
           </div>

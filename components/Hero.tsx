@@ -1,15 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles, ShieldCheck, Globe, Star, ShoppingBag, Tag, CircleDollarSign, Zap, ChevronRight } from 'lucide-react';
-import { Page, Product } from '../types';
+import { Page, Product, Language } from '../types';
 
 interface HeroProps {
+  language: Language;
   setCurrentPage: (p: Page) => void;
   setSelectedProduct: (p: Product) => void;
   boostedProducts: Product[];
 }
 
-const Hero: React.FC<HeroProps> = ({ setCurrentPage, setSelectedProduct, boostedProducts }) => {
+const Hero: React.FC<HeroProps> = ({ language, setCurrentPage, setSelectedProduct, boostedProducts }) => {
   const [currentBoostedIdx, setCurrentBoostedIdx] = useState(0);
 
   useEffect(() => {
@@ -24,6 +25,23 @@ const Hero: React.FC<HeroProps> = ({ setCurrentPage, setSelectedProduct, boosted
     setSelectedProduct(product);
     setCurrentPage(Page.ProductDetail);
     window.scrollTo(0, 0);
+  };
+
+  const t = {
+    badge: language === 'bn' ? 'সেরা ডিল এবং প্রিমিয়াম কালেকশন' : 'Best Deals & Premium Collection',
+    titleMain: language === 'bn' ? 'সব কিনুন' : 'Buy Everything',
+    titleSub: language === 'bn' ? 'সব বেচুন' : 'Sell Everything',
+    titlePlatform: language === 'bn' ? 'Bazaari-তে' : 'on Bazaari',
+    desc: language === 'bn' ? 'আপনার পছন্দের পণ্য খুঁজে পাওয়া এবং দ্রুত বিক্রয় করা এখন আরও সহজ। আমাদের আভিজাত্যই আপনার আস্থা।' : 'Finding your favorite products and selling them quickly is now easier than ever. Our elegance is your trust.',
+    buyBtn: language === 'bn' ? 'পণ্য কিনুন' : 'Buy Products',
+    sellBtn: language === 'bn' ? 'অ্যাড দিন (Sell)' : 'Post Ad (Sell)',
+    boostBadge: language === 'bn' ? 'বুস্টেড প্রোডাক্ট' : 'Boosted Product',
+    safeBadge: language === 'bn' ? '১০০% নিরাপদ' : '100% Secure',
+    safeSub: language === 'bn' ? 'ভেরিফাইড লেনদেন' : 'Verified Transactions',
+    nationBadge: language === 'bn' ? 'সারা দেশ' : 'Nationwide',
+    nationSub: language === 'bn' ? 'ফাস্ট ডেলিভারি' : 'Fast Delivery',
+    priceBadge: language === 'bn' ? 'সেরা মূল্য' : 'Best Price',
+    priceSub: language === 'bn' ? 'সরাসরি বিক্রেতা' : 'Direct from Seller'
   };
 
   return (
@@ -43,19 +61,19 @@ const Hero: React.FC<HeroProps> = ({ setCurrentPage, setSelectedProduct, boosted
         <div className="animate-in fade-in slide-in-from-left-10 duration-1000 text-center lg:text-left">
           <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/10 backdrop-blur-md rounded-full text-[#FFD600] text-sm font-black tracking-widest uppercase border border-white/20 mb-8 shadow-2xl">
             <Zap className="w-4 h-4 fill-current animate-bounce" />
-            সেরা ডিল এবং প্রিমিয়াম কালেকশন
+            {t.badge}
           </div>
           
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight mb-8 drop-shadow-premium">
-            সব কিনুন <br />
-            সব বেচুন <br />
+            {t.titleMain} <br />
+            {t.titleSub} <br />
             <span className="text-[#FFD600] inline-block bg-[#1A237E]/60 px-6 py-2 rounded-3xl mt-4 border border-white/10 backdrop-blur-md animate-glow">
-              Bazaari-তে
+              {t.titlePlatform}
             </span>
           </h1>
           
           <p className="text-xl text-blue-50 max-w-xl mb-12 font-medium opacity-90 leading-relaxed drop-shadow-premium">
-            আপনার পছন্দের পণ্য খুঁজে পাওয়া এবং দ্রুত বিক্রয় করা এখন আরও সহজ। আমাদের আভিজাত্যই আপনার আস্থা।
+            {t.desc}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6">
@@ -63,7 +81,7 @@ const Hero: React.FC<HeroProps> = ({ setCurrentPage, setSelectedProduct, boosted
               onClick={() => setCurrentPage(Page.Shop)} 
               className="group relative px-10 py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl hover:bg-white transform hover:-translate-y-1 transition-all flex items-center justify-center gap-4 shadow-2xl"
             >
-              <span>পণ্য কিনুন</span>
+              <span>{t.buyBtn}</span>
               <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </button>
             
@@ -71,7 +89,7 @@ const Hero: React.FC<HeroProps> = ({ setCurrentPage, setSelectedProduct, boosted
               onClick={() => setCurrentPage(Page.PostAd)} 
               className="px-10 py-5 bg-white/10 backdrop-blur-xl border-2 border-white/30 text-white font-black rounded-2xl hover:bg-white hover:text-[#1A237E] transition-all shadow-2xl"
             >
-              অ্যাড দিন (Sell)
+              {t.sellBtn}
             </button>
           </div>
         </div>
@@ -82,7 +100,7 @@ const Hero: React.FC<HeroProps> = ({ setCurrentPage, setSelectedProduct, boosted
             {boostedProducts.length > 0 && (
               <>
                 <div className="absolute -top-6 -left-6 bg-[#1A237E] text-[#FFD600] px-6 py-2 rounded-2xl font-black text-xs z-30 shadow-2xl flex items-center gap-2 border border-white/10">
-                  <Sparkles className="w-4 h-4" /> বুস্টেড প্রোডাক্ট
+                  <Sparkles className="w-4 h-4" /> {t.boostBadge}
                 </div>
 
                 {boostedProducts.map((product, idx) => (
@@ -151,24 +169,24 @@ const Hero: React.FC<HeroProps> = ({ setCurrentPage, setSelectedProduct, boosted
           <div className="flex items-center gap-4 text-white">
             <ShieldCheck className="w-8 h-8 text-[#FFD600]" />
             <div>
-              <p className="text-xs font-black uppercase tracking-tighter">১০০% নিরাপদ</p>
-              <p className="text-[10px] opacity-60">ভেরিফাইড লেনদেন</p>
+              <p className="text-xs font-black uppercase tracking-tighter">{t.safeBadge}</p>
+              <p className="text-[10px] opacity-60">{t.safeSub}</p>
             </div>
           </div>
           <div className="w-px h-8 bg-white/10"></div>
           <div className="flex items-center gap-4 text-white">
             <Globe className="w-8 h-8 text-[#FFD600]" />
             <div>
-              <p className="text-xs font-black uppercase tracking-tighter">সারা দেশ</p>
-              <p className="text-[10px] opacity-60">ফাস্ট ডেলিভারি</p>
+              <p className="text-xs font-black uppercase tracking-tighter">{t.nationBadge}</p>
+              <p className="text-[10px] opacity-60">{t.nationSub}</p>
             </div>
           </div>
           <div className="w-px h-8 bg-white/10"></div>
           <div className="flex items-center gap-4 text-white">
             <CircleDollarSign className="w-8 h-8 text-[#FFD600]" />
             <div>
-              <p className="text-xs font-black uppercase tracking-tighter">সেরা মূল্য</p>
-              <p className="text-[10px] opacity-60">সরাসরি বিক্রেতা</p>
+              <p className="text-xs font-black uppercase tracking-tighter">{t.priceBadge}</p>
+              <p className="text-[10px] opacity-60">{t.priceSub}</p>
             </div>
           </div>
         </div>

@@ -29,7 +29,7 @@ const Contact: React.FC = () => {
               </div>
               <div>
                 <h4 className="font-bold text-[#1A237E] mb-1">ইমেইল</h4>
-                <p className="text-slate-500 text-sm">heytoxic105@gmail.com</p>
+                <p className="text-slate-500 text-sm">bazaarihelp@gmail.com</p>
               </div>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex items-start gap-4">
@@ -38,14 +38,14 @@ const Contact: React.FC = () => {
               </div>
               <div>
                 <h4 className="font-bold text-[#1A237E] mb-1">হেড অফিস</h4>
-                <p className="text-slate-500 text-sm">বনানী, ঢাকা, বাংলাদেশ</p>
+                <p className="text-slate-500 text-sm">বাংলাদেশ</p>
               </div>
             </div>
           </div>
 
           {/* Form */}
           <div className="lg:col-span-2 bg-white p-8 md:p-12 rounded-[40px] shadow-xl border border-slate-100">
-            <form className="grid md:grid-cols-2 gap-6">
+            <form className="grid md:grid-cols-2 gap-6" onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700">আপনার নাম</label>
                 <input type="text" placeholder="যেমন: আবরার আহমেদ" className="w-full px-6 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-[#1A237E] transition-all" />
