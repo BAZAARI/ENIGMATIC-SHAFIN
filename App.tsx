@@ -25,7 +25,7 @@ import { CATEGORIES, PRODUCTS, BOOST_PLANS, VERIFY_PLANS } from './constants.tsx
 import { ArrowRight, ShoppingBag, MessageCircle, Plus, ShieldCheck, Sparkles, X, LogIn, UserPlus, Lock, Mail, User as UserIcon, Info, Key, Zap, Rocket, Headset, MessageSquare, CheckCircle, AtSign } from 'lucide-react';
 
 const INITIAL_MOCK_USERS = [
-  { identity: 'enigmaticshafin@gmail.com', password: 'SHAFIN@1a', name: 'Shafin (Admin)', username: 'shafin_admin' }
+  { identity: 'bazaarihelp@gmail.com', password: 'SHAFIN@1a', name: 'Bazaari Admin', username: 'bazaari_admin' }
 ];
 
 const App: React.FC = () => {
@@ -42,7 +42,7 @@ const App: React.FC = () => {
   const [preSelectedBoostProduct, setPreSelectedBoostProduct] = useState<Product | null>(null);
   const [showOrderSuccess, setShowOrderSuccess] = useState(false);
 
-  const [adminEmails, setAdminEmails] = useState<string[]>(['enigmaticshafin@gmail.com']);
+  const [adminEmails, setAdminEmails] = useState<string[]>(['bazaarihelp@gmail.com']);
 
   const [adminSettings, setAdminSettings] = useState<AdminSettings>({
     freePostLimit: 3,
@@ -56,6 +56,7 @@ const App: React.FC = () => {
   const [postRequests, setPostRequests] = useState<PostRequest[]>([]);
   const [verificationRequests, setVerificationRequests] = useState<VerificationRequest[]>([]);
   const [supportMessages, setSupportMessages] = useState<SupportMessage[]>([]);
+  
   const [approvedProducts, setApprovedProducts] = useState<Product[]>(PRODUCTS);
 
   const [authIdentity, setAuthIdentity] = useState('');
@@ -150,6 +151,28 @@ const App: React.FC = () => {
     setSupportMessages(prev => [...prev, reply]);
   };
 
+  const handlePostApproval = (id: string, status: 'approved' | 'rejected') => {
+    const request = postRequests.find(r => r.id === id);
+    if (!request) return;
+
+    setPostRequests(prev => prev.map(r => r.id === id ? {...r, status} : r));
+
+    if (status === 'approved') {
+      setApprovedProducts(prev => [request.product, ...prev]);
+    }
+  };
+
+  const handleBoostApproval = (id: string, status: 'approved' | 'rejected') => {
+    const request = boostRequests.find(r => r.id === id);
+    if (!request) return;
+
+    setBoostRequests(prev => prev.map(r => r.id === id ? {...r, status} : r));
+
+    if (status === 'approved' && request.productId) {
+      setApprovedProducts(prev => prev.map(p => p.id === request.productId ? {...p, isFeatured: true} : p));
+    }
+  };
+
   const handleLogoClick = () => {
     if (adminClickTimer.current) clearTimeout(adminClickTimer.current);
     const nextCount = adminClickCount + 1;
@@ -189,8 +212,8 @@ const App: React.FC = () => {
           adminEmails={adminEmails}
           onUpdateSettings={setAdminSettings}
           onAddAdminEmail={(email) => setAdminEmails(prev => Array.from(new Set([...prev, email.toLowerCase()])))}
-          onUpdateBoost={(id, status) => setBoostRequests(prev => prev.map(r => r.id === id ? {...r, status} : r))}
-          onUpdatePost={(id, status) => setPostRequests(prev => prev.map(r => r.id === id ? {...r, status} : r))}
+          onUpdateBoost={handleBoostApproval}
+          onUpdatePost={handlePostApproval}
           onUpdateVerification={(id, status) => null}
           onAdminReply={handleAdminReply}
         />;
@@ -208,7 +231,7 @@ const App: React.FC = () => {
         return <SupportChat messages={supportMessages.filter(m => m.userEmail === currentUser?.email)} onSend={handleSendSupportMessage} onClose={() => setCurrentPage(Page.Home)} />;
       case Page.Boost: return <BoostPanel onBoostSubmit={(r) => setBoostRequests(prev => [r, ...prev])} initialProduct={preSelectedBoostProduct} userProducts={approvedProducts} />;
       case Page.Verification: return <Verification userEmail={currentUser?.email || ''} onVerifySubmit={(r) => setVerificationRequests(prev => [r, ...prev])} />;
-      case Page.Wallet: return <Wallet />;
+      case Page.Wallet: return <Wallet user={currentUser} onUserUpdate={setCurrentUser} />;
       case Page.TrackOrder: return <TrackOrder />;
       case Page.AIChat: return <AIChat />;
       case Page.Messenger: return <Messenger />;

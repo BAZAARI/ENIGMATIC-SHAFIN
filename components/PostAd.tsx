@@ -1,9 +1,8 @@
 
 import React, { useState, useRef } from 'react';
 import { Camera, Sparkles, Plus, AlertCircle, LogIn, CheckCircle, X, Rocket, ShieldCheck, MapPin, Phone, CreditCard, Zap, ChevronRight, Loader2, Image as ImageIcon } from 'lucide-react';
-import { PostRequest, Product, AdminSettings } from '../types';
-import { CATEGORIES } from '../constants';
-// Always use import {GoogleGenAI} from "@google/genai";
+import { PostRequest, Product, AdminSettings } from '../types.ts';
+import { CATEGORIES } from '../constants.tsx';
 import { GoogleGenAI } from "@google/genai";
 
 interface PostAdProps {
@@ -20,7 +19,7 @@ const PostAd: React.FC<PostAdProps> = ({ isLoggedIn, isVerified, userName, postC
   const [description, setDescription] = useState('');
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState('বাংলাদেশ');
   const [phone, setPhone] = useState('');
   const [category, setCategory] = useState('Fashion');
   const [brand, setBrand] = useState('');
@@ -38,7 +37,6 @@ const PostAd: React.FC<PostAdProps> = ({ isLoggedIn, isVerified, userName, postC
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isLimitReached = postCountToday >= settings.freePostLimit;
 
-  // Fix: Explicitly casting file to File to avoid "unknown" type issues which cause Blob assignment errors
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -67,7 +65,6 @@ const PostAd: React.FC<PostAdProps> = ({ isLoggedIn, isVerified, userName, postC
     
     setIsGenerating(true);
     try {
-      // Always initialize GoogleGenAI with a named apiKey parameter from process.env.API_KEY
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const prompt = `Write a professional and attractive product description in Bengali for a product named "${productName}". 
       Category: ${category}. 
@@ -75,13 +72,11 @@ const PostAd: React.FC<PostAdProps> = ({ isLoggedIn, isVerified, userName, postC
       Model: ${model || 'Not specified'}. 
       The description should highlight premium quality and be suitable for a lifestyle marketplace in Bangladesh. Keep it concise (around 50-80 words).`;
 
-      // Simplified generateContent call using string as contents for text generation tasks
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: prompt,
       });
 
-      // Directly access .text property from response
       if (response.text) {
         setDescription(response.text.trim());
       }
@@ -280,7 +275,7 @@ const PostAd: React.FC<PostAdProps> = ({ isLoggedIn, isVerified, userName, postC
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase">লোকেশন</label>
-                <div className="relative"><MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="যেমন: ঢাকা, বনানী" className="w-full pl-12 pr-6 py-4 bg-slate-50 rounded-2xl outline-none" value={location} onChange={e => setLocation(e.target.value)} /></div>
+                <div className="relative"><MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="যেমন: বাংলাদেশ" className="w-full pl-12 pr-6 py-4 bg-slate-50 rounded-2xl outline-none" value={location} onChange={e => setLocation(e.target.value)} /></div>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase">ফোন নম্বর</label>

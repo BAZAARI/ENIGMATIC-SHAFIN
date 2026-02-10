@@ -33,6 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           
+          {/* Branded Logo Section */}
           <div 
             className="flex items-center cursor-pointer group" 
             onClick={() => {
@@ -40,10 +41,16 @@ const Navbar: React.FC<NavbarProps> = ({
               if (onLogoClick) onLogoClick();
             }}
           >
-            <div className="bg-[#1A237E] p-2 rounded-lg mr-2 transition-transform group-hover:scale-110">
-              <ShoppingBag className="text-[#FFD600] w-6 h-6" />
+            <div className="relative flex items-center justify-center mr-3 transition-transform group-hover:scale-105">
+              <div className="bg-[#1A237E] w-12 h-12 rounded-xl rotate-3 absolute group-hover:rotate-6 transition-transform"></div>
+              <div className="bg-[#FFD600] w-12 h-12 rounded-xl -rotate-3 border-2 border-[#1A237E] flex items-center justify-center relative z-10">
+                <span className="text-[#1A237E] font-black text-2xl italic">B</span>
+              </div>
             </div>
-            <span className="text-2xl font-bold text-[#1A237E] dark:text-white">Bazaari</span>
+            <div className="flex flex-col">
+              <span className="text-2xl font-black text-[#1A237E] dark:text-white leading-none tracking-tighter">BAZAARI</span>
+              <span className="text-[10px] font-black text-[#FFD600] bg-[#1A237E] px-2 py-0.5 rounded-sm mt-0.5 tracking-[0.2em] w-fit">PREMIUM</span>
+            </div>
           </div>
 
           <div className="hidden lg:flex flex-1 max-w-sm mx-6">

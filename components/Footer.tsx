@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ShoppingBag, Facebook, Instagram, Twitter, Youtube, MapPin, Mail, Phone, ExternalLink } from 'lucide-react';
-import { Page } from '../types';
+import { Page } from '../types.ts';
 
 interface FooterProps {
   setCurrentPage: (p: Page) => void;
@@ -15,9 +15,17 @@ const Footer: React.FC<FooterProps> = ({ setCurrentPage }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Info */}
           <div className="space-y-6">
-            <div className="flex items-center cursor-pointer" onClick={() => setCurrentPage(Page.Home)}>
-              <div className="bg-[#1A237E] p-2 rounded-lg mr-2"><ShoppingBag className="text-[#FFD600] w-6 h-6" /></div>
-              <span className="text-2xl font-bold text-[#1A237E] dark:text-white">Bazaari</span>
+            <div className="flex items-center cursor-pointer group" onClick={() => setCurrentPage(Page.Home)}>
+              <div className="relative flex items-center justify-center mr-3 scale-90">
+                <div className="bg-[#1A237E] w-10 h-10 rounded-xl rotate-3 absolute"></div>
+                <div className="bg-[#FFD600] w-10 h-10 rounded-xl -rotate-3 border-2 border-[#1A237E] flex items-center justify-center relative z-10">
+                  <span className="text-[#1A237E] font-black text-xl italic">B</span>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-black text-[#1A237E] dark:text-white leading-none tracking-tighter">BAZAARI</span>
+                <span className="text-[8px] font-black text-[#FFD600] bg-[#1A237E] px-1.5 py-0.5 rounded-sm mt-0.5 tracking-[0.2em] w-fit">PREMIUM</span>
+              </div>
             </div>
             <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
               Bazaari হলো বাংলাদেশের প্রিমিয়াম মাল্টি-ভেন্ডার লাইফস্টাইল মার্কেটপ্লেস। আমরা নিশ্চিত করি আভিজাত্য এবং কোয়ালিটি।
@@ -45,8 +53,8 @@ const Footer: React.FC<FooterProps> = ({ setCurrentPage }) => {
             <h4 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-wider">সহায়তা</h4>
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400"><Phone className="w-4 h-4" /> +৮৮০ ১৫১৬ ৫৯৫ ৫৯৭</li>
-              <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400"><Mail className="w-4 h-4" /> help@bazaari.com</li>
-              <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400"><MapPin className="w-4 h-4" /> বনানী, ঢাকা, বাংলাদেশ</li>
+              <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400"><Mail className="w-4 h-4" /> bazaarihelp@gmail.com</li>
+              <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400"><MapPin className="w-4 h-4" /> বাংলাদেশ</li>
             </ul>
           </div>
 
@@ -62,7 +70,7 @@ const Footer: React.FC<FooterProps> = ({ setCurrentPage }) => {
         </div>
 
         <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">© ২০২৪ Bazaari Marketplace. সর্বস্বত্ব সংরক্ষিত।</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">© ২০২৬ Bazaari Marketplace. সর্বস্বত্ব সংরক্ষিত।</p>
           <div className="flex gap-6">
              <a href="#" className="text-xs font-bold text-slate-400 hover:text-[#1A237E]">গোপনীয়তা নীতি</a>
              <a href="#" className="text-xs font-bold text-slate-400 hover:text-[#1A237E]">শর্তাবলী</a>

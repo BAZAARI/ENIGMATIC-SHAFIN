@@ -7,15 +7,15 @@ const TrackOrder: React.FC = () => {
   const [isTracked, setIsTracked] = useState(false);
 
   const steps = [
-    { label: 'অর্ডার কনফার্ম', status: 'completed', date: '১২ মার্চ, ২০২৪' },
-    { label: 'প্রসেসিং', status: 'completed', date: '১৩ মার্চ, ২০২৪' },
-    { label: 'শিফট', status: 'active', date: '১৫ মার্চ, ২০২৪' },
+    { label: 'অর্ডার কনফার্ম', status: 'completed', date: '১২ মার্চ, ২০২৬' },
+    { label: 'প্রসেসিং', status: 'completed', date: '১৩ মার্চ, ২০২৬' },
+    { label: 'শিফট', status: 'active', date: '১৫ মার্চ, ২০২৬' },
     { label: 'ডেলিভারি', status: 'pending', date: 'সম্ভাব্য: ১৭ মার্চ' }
   ];
 
   return (
     <div className="py-20 min-h-screen bg-slate-50">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl auto px-4">
         <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-slate-100">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold text-[#1A237E] mb-4">আপনার অর্ডার ট্র্যাক করুন</h2>
@@ -47,7 +47,7 @@ const TrackOrder: React.FC = () => {
                 </div>
                 <div className="mt-4 md:mt-0 text-right">
                   <p className="text-slate-500 text-sm">সম্ভাব্য ডেলিভারি</p>
-                  <p className="font-bold text-[#1A237E]">১৭ মার্চ, ২০২৪</p>
+                  <p className="font-bold text-[#1A237E]">১৭ মার্চ, ২০২৬</p>
                 </div>
               </div>
 

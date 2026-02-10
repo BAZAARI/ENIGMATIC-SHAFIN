@@ -22,6 +22,7 @@ export interface User {
   email: string;
   isVerified: boolean;
   postCountToday: number;
+  profilePic?: string;
 }
 
 export interface SupportMessage {
@@ -53,6 +54,7 @@ export interface AdminSettings {
   extraPostPrice: number;
   boostPlans: BoostPlan[];
   verifyPlans: VerifyPlan[];
+  verificationPrice?: number;
 }
 
 export interface CartItem {

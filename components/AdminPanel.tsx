@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, ShoppingBag, Settings, LogOut, Rocket, 
-  ClipboardList, Bell, MessageSquare, Wrench, ShieldCheck, Check, X as CloseIcon
+  ClipboardList, Bell, MessageSquare, Wrench, ShieldCheck, Check, X as CloseIcon, Eye
 } from 'lucide-react';
 import { BoostRequest, PostRequest, VerificationRequest, SupportMessage, AdminSettings } from '../types.ts';
 
@@ -53,8 +53,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="bg-slate-900 border border-white/5 p-12 rounded-[3rem] w-full max-w-md shadow-2xl text-center">
           <h2 className="text-3xl font-black text-white mb-8">Admin Login</h2>
           <form onSubmit={handleLogin} className="space-y-4">
-            <input type="email" placeholder="ইমেইল" className="w-full px-6 py-4 bg-slate-800 rounded-2xl text-white" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
-            <input type="password" placeholder="পাসওয়ার্ড" className="w-full px-6 py-4 bg-slate-800 rounded-2xl text-white" value={password} onChange={e => setPassword(e.target.value)} />
+            <input type="email" placeholder="ইমেইল" className="w-full px-6 py-4 bg-slate-800 rounded-2xl text-white outline-none" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
+            <input type="password" placeholder="পাসওয়ার্ড" className="w-full px-6 py-4 bg-slate-800 rounded-2xl text-white outline-none" value={password} onChange={e => setPassword(e.target.value)} />
             <button className="w-full py-4 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl">প্রবেশ করুন</button>
           </form>
           <button onClick={onClose} className="mt-4 text-slate-500 text-sm">ফিরে যান</button>
@@ -68,8 +68,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* Sidebar - Matches Screenshot */}
       <aside className="w-72 bg-[#0F172A] border-r border-white/5 flex flex-col p-8 fixed h-full z-50">
         <div className="flex items-center gap-3 mb-12">
-          <div className="bg-[#FFD600] p-2 rounded-lg"><ShoppingBag className="text-[#1A237E] w-5 h-5" /></div>
-          <span className="text-xl font-black text-white">Admin Bazaari</span>
+          <div className="relative flex items-center justify-center mr-3 scale-75">
+            <div className="bg-[#1A237E] w-12 h-12 rounded-xl rotate-3 absolute"></div>
+            <div className="bg-[#FFD600] w-12 h-12 rounded-xl -rotate-3 border-2 border-[#1A237E] flex items-center justify-center relative z-10">
+              <span className="text-[#1A237E] font-black text-2xl italic">B</span>
+            </div>
+          </div>
+          <span className="text-xl font-black text-white tracking-tighter">ADMIN BAZAARI</span>
         </div>
 
         <nav className="space-y-3 flex-grow">
@@ -109,6 +114,58 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <Bell className="w-6 h-6 text-slate-400" />
           </div>
         </header>
+
+        {activeTab === 'posts' && (
+          <div className="bg-[#0F172A] rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl">
+            <div className="p-8 border-b border-white/5 flex justify-between items-center">
+              <h3 className="text-2xl font-black text-white">পেনডিং অ্যাড রিকোয়েস্ট ({pendingPosts})</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  <tr>
+                    <th className="p-8">পণ্যের তথ্য</th>
+                    <th className="p-8">সেলার</th>
+                    <th className="p-8">স্ট্যাটাস</th>
+                    <th className="p-8 text-right">অ্যাকশন</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {postRequests.filter(r => r.status === 'pending').map(r => (
+                    <tr key={r.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-8">
+                        <div className="flex items-center gap-4">
+                          <img src={r.product.image} className="w-14 h-14 rounded-2xl object-cover border border-white/10" alt="" />
+                          <div>
+                            <p className="font-bold text-white text-lg">{r.product.name}</p>
+                            <p className="text-sm text-[#FFD600] font-black">৳{r.product.price}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-8">
+                        <p className="font-bold text-slate-300">{r.product.vendor}</p>
+                        <p className="text-xs text-slate-500">{r.product.location}</p>
+                      </td>
+                      <td className="p-8">
+                         <span className="px-3 py-1 bg-yellow-500/10 text-yellow-500 text-[10px] font-black rounded-full border border-yellow-500/20">PENDING</span>
+                         {r.isPaid && <p className="text-[8px] text-green-500 mt-1 font-black">PAID AD</p>}
+                      </td>
+                      <td className="p-8 text-right">
+                        <div className="flex justify-end gap-3">
+                          <button onClick={() => onUpdatePost(r.id, 'approved')} className="p-4 bg-green-500/10 text-green-500 rounded-2xl hover:bg-green-500 hover:text-white transition-all"><Check className="w-5 h-5" /></button>
+                          <button onClick={() => onUpdatePost(r.id, 'rejected')} className="p-4 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all"><CloseIcon className="w-5 h-5" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {pendingPosts === 0 && (
+                    <tr><td colSpan={4} className="p-20 text-center text-slate-500 font-bold">বর্তমানে কোনো পেনডিং পোস্ট নেই।</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {activeTab === 'settings' && (
           <div className="max-w-2xl space-y-8 animate-in fade-in slide-in-from-bottom-4">
@@ -153,8 +210,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* Other tabs remain functional */}
-        {activeTab === 'dashboard' && <div className="text-slate-500 font-bold text-2xl">Dashboard content is loading...</div>}
+        {/* Dashboard Placeholder */}
+        {activeTab === 'dashboard' && (
+           <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-slate-900/50 p-10 rounded-[3rem] border border-white/5 text-center">
+                 <p className="text-slate-500 font-bold uppercase text-xs mb-4">মোট পেনডিং পোস্ট</p>
+                 <h2 className="text-5xl font-black text-blue-400">{pendingPosts}</h2>
+              </div>
+              <div className="bg-slate-900/50 p-10 rounded-[3rem] border border-white/5 text-center">
+                 <p className="text-slate-500 font-bold uppercase text-xs mb-4">মোট পেনডিং বুস্ট</p>
+                 <h2 className="text-5xl font-black text-yellow-400">{pendingBoosts}</h2>
+              </div>
+              <div className="bg-slate-900/50 p-10 rounded-[3rem] border border-white/5 text-center">
+                 <p className="text-slate-500 font-bold uppercase text-xs mb-4">নতুন মেসেজ</p>
+                 <h2 className="text-5xl font-black text-purple-400">{unreadMessages}</h2>
+              </div>
+           </div>
+        )}
       </main>
     </div>
   );
