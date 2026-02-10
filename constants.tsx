@@ -31,6 +31,7 @@ export const CATEGORIES: Category[] = [
   { id: 'perfume', name: 'পারফিউম', icon: '✨' },
   { id: 'electronics', name: 'ইলেকট্রনিক্স', icon: '🎧' },
   { id: 'lifestyle', name: 'লাইফস্টাইল', icon: '🏠' },
+  { id: 'tolet', name: 'টু-লেট', icon: '🏘️' },
 ];
 
 export const PRODUCTS: Product[] = [];

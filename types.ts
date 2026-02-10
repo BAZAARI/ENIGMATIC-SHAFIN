@@ -15,6 +15,7 @@ export interface Product {
   phone?: string;
   condition?: 'New' | 'Used';
   isFeatured?: boolean;
+  rentalType?: 'Bachelor' | 'Family'; // New field for To-Let
 }
 
 export interface User {
@@ -96,7 +97,8 @@ export enum Page {
   Cart = 'Cart',
   Admin = 'Admin',
   SupportChat = 'SupportChat',
-  Checkout = 'Checkout'
+  Checkout = 'Checkout',
+  ToLet = 'ToLet'
 }
 
 export interface BoostRequest {

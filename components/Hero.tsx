@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Sparkles, ShieldCheck, Globe, Star, ShoppingBag, Tag, CircleDollarSign, Zap, ChevronRight } from 'lucide-react';
+import { ArrowRight, Sparkles, ShieldCheck, Globe, Star, ShoppingBag, Tag, CircleDollarSign, Zap, ChevronRight, Home } from 'lucide-react';
 import { Page, Product, Language } from '../types';
 
 interface HeroProps {
@@ -35,6 +35,7 @@ const Hero: React.FC<HeroProps> = ({ language, setCurrentPage, setSelectedProduc
     desc: language === 'bn' ? 'আপনার পছন্দের পণ্য খুঁজে পাওয়া এবং দ্রুত বিক্রয় করা এখন আরও সহজ। আমাদের আভিজাত্যই আপনার আস্থা।' : 'Finding your favorite products and selling them quickly is now easier than ever. Our elegance is your trust.',
     buyBtn: language === 'bn' ? 'পণ্য কিনুন' : 'Buy Products',
     sellBtn: language === 'bn' ? 'অ্যাড দিন (Sell)' : 'Post Ad (Sell)',
+    toletBtn: language === 'bn' ? 'বাসা ভাড়া দিন (To-Let)' : 'Post To-Let',
     boostBadge: language === 'bn' ? 'বুস্টেড প্রোডাক্ট' : 'Boosted Product',
     safeBadge: language === 'bn' ? '১০০% নিরাপদ' : '100% Secure',
     safeSub: language === 'bn' ? 'ভেরিফাইড লেনদেন' : 'Verified Transactions',
@@ -76,20 +77,34 @@ const Hero: React.FC<HeroProps> = ({ language, setCurrentPage, setSelectedProduc
             {t.desc}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-6">
-            <button 
-              onClick={() => setCurrentPage(Page.Shop)} 
-              className="group relative px-10 py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl hover:bg-white transform hover:-translate-y-1 transition-all flex items-center justify-center gap-4 shadow-2xl"
-            >
-              <span>{t.buyBtn}</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-            </button>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-6">
+              <button 
+                onClick={() => setCurrentPage(Page.Shop)} 
+                className="group relative px-10 py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl hover:bg-white transform hover:-translate-y-1 transition-all flex items-center justify-center gap-4 shadow-2xl"
+              >
+                <span>{t.buyBtn}</span>
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+              </button>
+              
+              <button 
+                onClick={() => setCurrentPage(Page.PostAd)} 
+                className="px-10 py-5 bg-white/10 backdrop-blur-xl border-2 border-white/30 text-white font-black rounded-2xl hover:bg-white hover:text-[#1A237E] transition-all shadow-2xl"
+              >
+                {t.sellBtn}
+              </button>
+            </div>
             
             <button 
-              onClick={() => setCurrentPage(Page.PostAd)} 
-              className="px-10 py-5 bg-white/10 backdrop-blur-xl border-2 border-white/30 text-white font-black rounded-2xl hover:bg-white hover:text-[#1A237E] transition-all shadow-2xl"
+              onClick={() => {
+                // Pass a signal to App to pre-select To-Let
+                window.dispatchEvent(new CustomEvent('navToPostToLet'));
+                setCurrentPage(Page.PostAd);
+              }}
+              className="w-full sm:w-fit px-10 py-5 bg-[#1A237E] border-2 border-[#FFD600] text-[#FFD600] font-black rounded-2xl hover:bg-[#FFD600] hover:text-[#1A237E] transition-all shadow-2xl flex items-center justify-center gap-3 group animate-in slide-up"
             >
-              {t.sellBtn}
+              <Home className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <span>{t.toletBtn}</span>
             </button>
           </div>
         </div>

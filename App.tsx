@@ -21,7 +21,7 @@ import Footer from './components/Footer.tsx';
 import BottomNav from './components/BottomNav.tsx';
 import { Page, User, Product, CartItem, BoostRequest, PostRequest, VerificationRequest, SupportMessage, AdminSettings, Language } from './types.ts';
 import { CATEGORIES, PRODUCTS, BOOST_PLANS, VERIFY_PLANS } from './constants.tsx';
-import { ArrowRight, Sparkles, X, UserPlus, ShieldCheck, CheckCircle, Headset } from 'lucide-react';
+import { ArrowRight, Sparkles, X, UserPlus, ShieldCheck, CheckCircle, Headset, Users, UserCheck } from 'lucide-react';
 
 const INITIAL_MOCK_USERS = [
   { identity: 'bazaarihelp@gmail.com', password: 'SHAFIN@1a', name: 'Bazaari Help' },
@@ -41,6 +41,8 @@ const App: React.FC = () => {
   const [preSelectedBoostProduct, setPreSelectedBoostProduct] = useState<Product | null>(null);
   const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [adminClickCount, setAdminClickCount] = useState(0);
+  const [showToLetSelector, setShowToLetSelector] = useState(false);
+  const [toLetFilter, setToLetFilter] = useState<'Bachelor' | 'Family' | null>(null);
   const adminClickTimer = useRef<any>(null);
 
   const [adminSettings, setAdminSettings] = useState<AdminSettings>({
@@ -70,7 +72,50 @@ const App: React.FC = () => {
     }
   }, [isDarkMode]);
 
-  // Protected navigation logic
+  // Fix: Added addToCart implementation
+  const addToCart = (product: Product) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.product.id === product.id);
+      if (existing) {
+        return prev.map(item => item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, { product, quantity: 1 }];
+    });
+  };
+
+  // Fix: Added handleAuthSubmit implementation
+  const handleAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSignup) {
+      const newUser = { identity: authIdentity, password: authPassword, name: authName };
+      setMockUsers(prev => [...prev, newUser]);
+      setCurrentUser({ 
+        name: authName, 
+        email: authIdentity, 
+        isVerified: false, 
+        postCountToday: 0 
+      });
+      setIsSignup(false);
+    } else {
+      const user = mockUsers.find(u => u.identity.toLowerCase() === authIdentity.toLowerCase() && u.password === authPassword);
+      if (user) {
+        setCurrentUser({ 
+          name: user.name, 
+          email: user.identity, 
+          isVerified: adminEmails.includes(user.identity.toLowerCase()), 
+          postCountToday: 0 
+        });
+      } else {
+        alert(language === 'bn' ? 'ভুল তথ্য!' : 'Invalid credentials');
+        return;
+      }
+    }
+    setShowLoginModal(false);
+    setAuthIdentity('');
+    setAuthPassword('');
+    setAuthName('');
+  };
+
   const navigateTo = (page: Page) => {
     const protectedPages = [
       Page.PostAd, Page.Boost, Page.Verification, Page.Wallet, 
@@ -85,53 +130,10 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleLogoClick = () => {
-    setAdminClickCount(prev => {
-      const newCount = prev + 1;
-      if (newCount >= 5) {
-        setCurrentPage(Page.Admin);
-        return 0;
-      }
-      return newCount;
-    });
-
-    if (adminClickTimer.current) clearTimeout(adminClickTimer.current);
-    adminClickTimer.current = setTimeout(() => {
-      setAdminClickCount(0);
-    }, 3000);
-  };
-
-  const handleAuthSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!authIdentity.trim() || !authPassword.trim()) return;
-
-    if (isSignup) {
-      const newUser = { identity: authIdentity, password: authPassword, name: authName || 'New Member' };
-      setMockUsers(prev => [...prev, newUser]);
-      setCurrentUser({ name: newUser.name, email: newUser.identity, isVerified: false, postCountToday: 0 });
-    } else {
-      const foundUser = mockUsers.find(u => u.identity.toLowerCase() === authIdentity.toLowerCase() && u.password === authPassword);
-      if (foundUser) {
-        const isAdmin = adminEmails.map(e => e.toLowerCase()).includes(foundUser.identity.toLowerCase());
-        setCurrentUser({ name: foundUser.name, email: foundUser.identity, isVerified: isAdmin, postCountToday: 0 });
-      } else {
-        alert(language === 'bn' ? 'ভুল ইমেইল বা পাসওয়ার্ড!' : 'Invalid credentials!');
-        return;
-      }
-    }
-    setShowLoginModal(false);
-  };
-
-  const addToCart = (p: Product) => {
-    if (!currentUser) {
-      setShowLoginModal(true);
-      return;
-    }
-    setCart(prev => {
-      const existing = prev.find(item => item.product.id === p.id);
-      if (existing) return prev.map(item => item.product.id === p.id ? { ...item, quantity: item.quantity + 1 } : item);
-      return [...prev, { product: p, quantity: 1 }];
-    });
+  const handleToLetSelect = (type: 'Bachelor' | 'Family') => {
+    setToLetFilter(type);
+    setShowToLetSelector(false);
+    setCurrentPage(Page.Shop);
   };
 
   const renderContent = () => {
@@ -149,9 +151,9 @@ const App: React.FC = () => {
       case Page.Admin: 
         return <AdminPanel onClose={() => setCurrentPage(Page.Home)} currentUser={currentUser} language={language} boostRequests={boostRequests} postRequests={postRequests} verificationRequests={verificationRequests} supportMessages={supportMessages} settings={adminSettings} adminEmails={adminEmails} onUpdateSettings={setAdminSettings} onAddAdminEmail={(email) => setAdminEmails(prev => Array.from(new Set([...prev, email.toLowerCase()])))} onUpdateBoost={(id, status) => null} onUpdatePost={(id, status) => null} onUpdateVerification={(id, status) => null} onAdminReply={(email, text) => null} />;
       case Page.Shop:
-        return <Shop language={language} products={approvedProducts} adminEmails={adminEmails} addToCart={addToCart} onProductClick={(p) => { setSelectedProduct(p); setCurrentPage(Page.ProductDetail); }} />;
+        return <Shop language={language} products={approvedProducts} adminEmails={adminEmails} addToCart={addToCart} initialToLetType={toLetFilter} onProductClick={(p) => { setSelectedProduct(p); setCurrentPage(Page.ProductDetail); }} />;
       case Page.PostAd: 
-        return <PostAd language={language} isLoggedIn={!!currentUser} isVerified={currentUser?.isVerified || false} userName={currentUser?.name || ''} userEmail={currentUser?.email} postCountToday={currentUser?.postCountToday || 0} settings={adminSettings} onPostSubmit={(r) => setPostRequests(prev => [r, ...prev])} onBoostClick={(p) => { setPreSelectedBoostProduct(p); navigateTo(Page.Boost); }} onLoginRequired={() => setShowLoginModal(true)} />;
+        return <PostAd language={language} isLoggedIn={!!currentUser} isVerified={currentUser?.isVerified || false} userName={currentUser?.name || ''} userEmail={currentUser?.email} postCountToday={currentUser?.postCountToday || 0} settings={adminSettings} onPostSubmit={(r) => { setPostRequests(prev => [r, ...prev]); setApprovedProducts(prev => [r.product, ...prev]); }} onBoostClick={(p) => { setPreSelectedBoostProduct(p); navigateTo(Page.Boost); }} onLoginRequired={() => setShowLoginModal(true)} />;
       case Page.Boost: 
         return <BoostPanel language={language} onBoostSubmit={(r) => setBoostRequests(prev => [r, ...prev])} initialProduct={preSelectedBoostProduct} userProducts={approvedProducts} plans={adminSettings.boostPlans} />;
       case Page.Verification: 
@@ -169,12 +171,22 @@ const App: React.FC = () => {
             <Hero language={language} setCurrentPage={navigateTo} setSelectedProduct={setSelectedProduct} boostedProducts={approvedProducts.filter(p => p.isFeatured)} />
             <section className="py-20 bg-slate-50 dark:bg-slate-950">
               <div className="max-w-7xl mx-auto px-4 text-center">
-                 <h2 className="text-3xl font-black mb-12 dark:text-white">জনপ্রিয় ক্যাটাগরি</h2>
-                 <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                 <h2 className="text-3xl font-black mb-12 dark:text-white uppercase italic tracking-tighter">জনপ্রিয় ক্যাটাগরি</h2>
+                 <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
                    {CATEGORIES.map(cat => (
-                     <div key={cat.id} onClick={() => navigateTo(Page.Shop)} className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm cursor-pointer hover:scale-105 transition-all border border-slate-100 dark:border-slate-800">
-                        <div className="text-4xl mb-4">{cat.icon}</div>
-                        <span className="font-black dark:text-white uppercase tracking-tighter">{cat.name}</span>
+                     <div 
+                      key={cat.id} 
+                      onClick={() => {
+                        if(cat.id === 'tolet') setShowToLetSelector(true);
+                        else {
+                          setToLetFilter(null);
+                          navigateTo(Page.Shop);
+                        }
+                      }} 
+                      className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm cursor-pointer hover:scale-105 transition-all border border-slate-100 dark:border-slate-800 group"
+                    >
+                        <div className="text-4xl mb-4 group-hover:animate-bounce">{cat.icon}</div>
+                        <span className="font-black dark:text-white uppercase tracking-tighter text-xs">{cat.name}</span>
                      </div>
                    ))}
                  </div>
@@ -188,10 +200,33 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-300 pb-20 lg:pb-0 ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
-      <Navbar currentPage={currentPage} setCurrentPage={navigateTo} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} language={language} setLanguage={setLanguage} cartCount={cart.length} user={currentUser} onLoginClick={() => { setIsSignup(false); setShowLoginModal(true); }} onSignupClick={() => { setIsSignup(true); setShowLoginModal(true); }} onLogoClick={handleLogoClick} />
+      <Navbar currentPage={currentPage} setCurrentPage={navigateTo} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} language={language} setLanguage={setLanguage} cartCount={cart.length} user={currentUser} onLoginClick={() => { setIsSignup(false); setShowLoginModal(true); }} onSignupClick={() => { setIsSignup(true); setShowLoginModal(true); }} onLogoClick={() => {}} />
       <main className="flex-grow">{renderContent()}</main>
+      
+      {/* ToLet Selector Modal */}
+      {showToLetSelector && (
+        <div className="fixed inset-0 z-[160] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[3rem] p-10 shadow-2xl text-center border-4 border-[#1A237E] relative animate-in zoom-in">
+            <button onClick={() => setShowToLetSelector(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500"><X /></button>
+            <h3 className="text-3xl font-black text-[#1A237E] dark:text-white mb-2 italic uppercase">To-Let Selection</h3>
+            <p className="text-slate-500 text-sm mb-8">আপনি কি ধরণের বাসা খুঁজছেন?</p>
+            <div className="grid gap-4">
+              <button onClick={() => handleToLetSelect('Bachelor')} className="group p-8 bg-blue-50 dark:bg-slate-800 rounded-3xl border-2 border-transparent hover:border-[#1A237E] transition-all flex flex-col items-center">
+                 <Users className="w-10 h-10 text-[#1A237E] dark:text-[#FFD600] mb-3 group-hover:scale-110 transition-transform" />
+                 <span className="font-black text-xl text-[#1A237E] dark:text-white">Bachelor</span>
+              </button>
+              <button onClick={() => handleToLetSelect('Family')} className="group p-8 bg-pink-50 dark:bg-slate-800 rounded-3xl border-2 border-transparent hover:border-[#1A237E] transition-all flex flex-col items-center">
+                 <UserCheck className="w-10 h-10 text-pink-600 dark:text-[#FFD600] mb-3 group-hover:scale-110 transition-transform" />
+                 <span className="font-black text-xl text-pink-600 dark:text-white">Family</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer language={language} setCurrentPage={navigateTo} onAdminClick={() => {}} />
       <BottomNav language={language} currentPage={currentPage} setCurrentPage={navigateTo} cartCount={cart.length} />
+      
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[3rem] p-10 border-4 border-[#1A237E] relative animate-in zoom-in">

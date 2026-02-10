@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Star, ShoppingCart, Eye, Check, ShieldCheck, UserCheck, CheckCircle } from 'lucide-react';
+import { Star, ShoppingCart, Eye, Check, ShieldCheck, UserCheck, CheckCircle, Users } from 'lucide-react';
 import { Product, Language } from '../types.ts';
 
 interface ProductCardProps {
@@ -18,6 +18,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onClick, 
   // Precise badge logic
   const isAdminEmail = adminEmails.map(e => e.toLowerCase()).includes(product.vendorEmail?.toLowerCase() || '');
   const isVerifiedUser = !isAdminEmail && (product.rating >= 4.5 || product.isFeatured); 
+  const isToLet = product.category === 'টু-লেট';
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -30,9 +31,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onClick, 
     <div className="group bg-white dark:bg-slate-800 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-700 hover:shadow-[0_30px_60px_rgba(0,0,0,0.1)] transition-all duration-500 transform hover:-translate-y-2">
       <div className="relative aspect-[4/5] overflow-hidden cursor-pointer" onClick={onClick}>
         <img src={product.image} alt={product.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" />
-        <div className="absolute top-5 left-5 bg-[#FFD600] text-[#1A237E] text-xs font-black px-4 py-1.5 rounded-full shadow-lg border border-white/20">
-          {discount}% OFF
+        
+        {/* Badges Overlay */}
+        <div className="absolute top-5 left-5 flex flex-col gap-2">
+          {!isToLet && (
+            <div className="bg-[#FFD600] text-[#1A237E] text-xs font-black px-4 py-1.5 rounded-full shadow-lg border border-white/20">
+              {discount}% OFF
+            </div>
+          )}
+          {isToLet && product.rentalType && (
+            <div className={`text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg border border-white/20 flex items-center gap-1 ${product.rentalType === 'Bachelor' ? 'bg-[#1A237E]' : 'bg-pink-600'}`}>
+              {product.rentalType === 'Bachelor' ? <Users className="w-3 h-3" /> : <UserCheck className="w-3 h-3" />}
+              {product.rentalType.toUpperCase()}
+            </div>
+          )}
         </div>
+
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4">
           <button onClick={handleAddToCart} className={`p-4 rounded-full transition-all shadow-2xl ${isAdding ? 'bg-green-500 text-white' : 'bg-white text-[#1A237E] hover:bg-[#FFD600]'}`}>
             {isAdding ? <Check className="w-6 h-6" /> : <ShoppingCart className="w-6 h-6" />}
@@ -70,7 +84,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onClick, 
         </h3>
 
         <div className="flex items-baseline space-x-3 mb-6">
-          <span className="text-2xl font-black text-[#1A237E] dark:text-[#FFD600]">৳{product.price.toLocaleString()}</span>
+          <span className="text-2xl font-black text-[#1A237E] dark:text-[#FFD600]">৳{product.price.toLocaleString()}{isToLet && '/mo'}</span>
         </div>
 
         <button onClick={handleAddToCart} className={`w-full py-4 font-black rounded-2xl border-2 transition-all shadow-lg ${isAdding ? 'bg-green-500 border-green-500 text-white' : 'bg-transparent border-[#1A237E] text-[#1A237E] dark:text-white hover:bg-[#1A237E] hover:text-white'}`}>
