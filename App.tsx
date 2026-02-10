@@ -72,7 +72,6 @@ const App: React.FC = () => {
     }
   }, [isDarkMode]);
 
-  // Fix: Added addToCart implementation
   const addToCart = (product: Product) => {
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
@@ -83,7 +82,6 @@ const App: React.FC = () => {
     });
   };
 
-  // Fix: Added handleAuthSubmit implementation
   const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isSignup) {
@@ -128,6 +126,19 @@ const App: React.FC = () => {
     }
     setCurrentPage(page);
     window.scrollTo(0, 0);
+  };
+
+  // Secret Admin entrance logic via Logo Click
+  const handleLogoClick = () => {
+    if (adminClickTimer.current) clearTimeout(adminClickTimer.current);
+    const newCount = adminClickCount + 1;
+    if (newCount >= 5) {
+      setCurrentPage(Page.Admin);
+      setAdminClickCount(0);
+    } else {
+      setAdminClickCount(newCount);
+      adminClickTimer.current = setTimeout(() => setAdminClickCount(0), 2000);
+    }
   };
 
   const handleToLetSelect = (type: 'Bachelor' | 'Family') => {
@@ -200,7 +211,7 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-300 pb-20 lg:pb-0 ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
-      <Navbar currentPage={currentPage} setCurrentPage={navigateTo} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} language={language} setLanguage={setLanguage} cartCount={cart.length} user={currentUser} onLoginClick={() => { setIsSignup(false); setShowLoginModal(true); }} onSignupClick={() => { setIsSignup(true); setShowLoginModal(true); }} onLogoClick={() => {}} />
+      <Navbar currentPage={currentPage} setCurrentPage={navigateTo} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} language={language} setLanguage={setLanguage} cartCount={cart.length} user={currentUser} onLoginClick={() => { setIsSignup(false); setShowLoginModal(true); }} onSignupClick={() => { setIsSignup(true); setShowLoginModal(true); }} onLogoClick={handleLogoClick} />
       <main className="flex-grow">{renderContent()}</main>
       
       {/* ToLet Selector Modal */}
@@ -224,7 +235,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <Footer language={language} setCurrentPage={navigateTo} onAdminClick={() => {}} />
+      <Footer language={language} setCurrentPage={navigateTo} onAdminClick={() => setCurrentPage(Page.Admin)} />
       <BottomNav language={language} currentPage={currentPage} setCurrentPage={navigateTo} cartCount={cart.length} />
       
       {showLoginModal && (
