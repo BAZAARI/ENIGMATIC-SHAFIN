@@ -18,6 +18,7 @@ export interface Product {
 
 export interface User {
   name: string;
+  username: string;
   email: string;
   isVerified: boolean;
   postCountToday: number;
@@ -89,7 +90,8 @@ export enum Page {
   ProductDetail = 'ProductDetail',
   Cart = 'Cart',
   Admin = 'Admin',
-  SupportChat = 'SupportChat'
+  SupportChat = 'SupportChat',
+  Checkout = 'Checkout'
 }
 
 export interface BoostRequest {
@@ -121,5 +123,17 @@ export interface VerificationRequest {
   trxId: string;
   userEmail: string;
   status: 'pending' | 'approved' | 'rejected';
+  timestamp: string;
+}
+
+export interface Order {
+  id: string;
+  items: CartItem[];
+  total: number;
+  customerName: string;
+  address: string;
+  phone: string;
+  paymentMethod: string;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered';
   timestamp: string;
 }

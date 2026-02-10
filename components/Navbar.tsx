@@ -12,9 +12,20 @@ interface NavbarProps {
   user: UserType | null;
   onLoginClick: () => void;
   onSignupClick: () => void;
+  onLogoClick?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage, isDarkMode, setIsDarkMode, cartCount, user, onLoginClick, onSignupClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ 
+  currentPage, 
+  setCurrentPage, 
+  isDarkMode, 
+  setIsDarkMode, 
+  cartCount, 
+  user, 
+  onLoginClick, 
+  onSignupClick,
+  onLogoClick
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -22,8 +33,16 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage, isDarkMode
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           
-          <div className="flex items-center cursor-pointer" onClick={() => setCurrentPage(Page.Home)}>
-            <div className="bg-[#1A237E] p-2 rounded-lg mr-2 transition-transform hover:scale-110"><ShoppingBag className="text-[#FFD600] w-6 h-6" /></div>
+          <div 
+            className="flex items-center cursor-pointer group" 
+            onClick={() => {
+              setCurrentPage(Page.Home);
+              if (onLogoClick) onLogoClick();
+            }}
+          >
+            <div className="bg-[#1A237E] p-2 rounded-lg mr-2 transition-transform group-hover:scale-110">
+              <ShoppingBag className="text-[#FFD600] w-6 h-6" />
+            </div>
             <span className="text-2xl font-bold text-[#1A237E] dark:text-white">Bazaari</span>
           </div>
 
