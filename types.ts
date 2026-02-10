@@ -7,6 +7,7 @@ export interface Product {
   image: string;
   vendor: string;
   vendorEmail?: string; // Track who posted it
+  vendorUid?: string; // Track by UID
   category: string;
   rating: number;
   reviews: number;
@@ -19,11 +20,16 @@ export interface Product {
 }
 
 export interface User {
+  uid: string; // 000001 format
+  username: string; // alphanumeric only
   name: string;
   email: string;
   isVerified: boolean;
   postCountToday: number;
   profilePic?: string;
+  password?: string; // Stored for mock auth
+  banExpiresAt?: number | null; // Timestamp
+  isPermanentlyBanned?: boolean;
 }
 
 export type Language = 'bn' | 'en';
@@ -63,7 +69,7 @@ export interface VerifyPlan {
 export interface AdminSettings {
   freePostLimit: number;
   extraPostPrice: number;
-  extraImagePrice: number; // Added for the 50 taka requirement
+  extraImagePrice: number; 
   boostPlans: BoostPlan[];
   verifyPlans: VerifyPlan[];
   verificationPrice?: number;
