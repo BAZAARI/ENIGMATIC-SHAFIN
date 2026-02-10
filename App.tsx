@@ -174,7 +174,7 @@ const App: React.FC = () => {
       case Page.Cart:
         return <Cart language={language} items={cart} setItems={setCart} setCurrentPage={navigateTo} />;
       case Page.Wallet: return <Wallet user={currentUser} onUserUpdate={setCurrentUser} language={language} />;
-      case Page.AIChat: return <AIChat />;
+      case Page.AIChat: return <AIChat onNavigateToAdmin={() => setCurrentPage(Page.Admin)} />;
       case Page.SupportChat: return <SupportChat messages={supportMessages} onSend={(txt) => {}} onClose={() => setCurrentPage(Page.Home)} />;
       default:
         return (

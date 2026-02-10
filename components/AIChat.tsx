@@ -1,10 +1,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Loader2, Lock, ChevronRight } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
-const AIChat: React.FC = () => {
-  const [messages, setMessages] = useState<{role: 'user' | 'bot', text: string}[]>([
+interface AIChatProps {
+  onNavigateToAdmin?: () => void;
+}
+
+const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
+  const [messages, setMessages] = useState<{role: 'user' | 'bot', text: string, showAdminLink?: boolean}[]>([
     { role: 'bot', text: 'আসসালামু আলাইকুম! আমি Bazaari AI। আপনাকে কীভাবে সাহায্য করতে পারি?' }
   ]);
   const [input, setInput] = useState('');
@@ -22,16 +26,31 @@ const AIChat: React.FC = () => {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
 
+    // Detect if user is asking for admin login
+    const isAdminRequest = /admin|অ্যাডমিন|লগইন|login/i.test(userMsg);
+
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: userMsg,
         config: {
-          systemInstruction: "You are a helpful customer support AI for Bazaari, a premium lifestyle marketplace in Bangladesh. Answer in Bengali. Keep answers concise and professional."
+          systemInstruction: `You are a helpful customer support AI for Bazaari, a premium lifestyle marketplace in Bangladesh. 
+          Answer in Bengali. Keep answers concise and professional.
+          If the user asks about the "Admin Panel" or "Admin Login", explain that they can access it through the secure login button you will provide. 
+          Instruct them to click the "Go to Admin Login" button below.`
         }
       });
-      setMessages(prev => [...prev, { role: 'bot', text: response.text || 'দুঃখিত, আমি বুঝতে পারিনি।' }]);
+      
+      const botText = response.text || 'দুঃখিত, আমি বুঝতে পারিনি।';
+      // If AI mentions admin or user asked for it, show the link
+      const showLink = isAdminRequest || /অ্যাডমিন|admin|লগইন/i.test(botText);
+      
+      setMessages(prev => [...prev, { 
+        role: 'bot', 
+        text: botText,
+        showAdminLink: showLink
+      }]);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'bot', text: 'সার্ভারে সমস্যা হচ্ছে, অনুগ্রহ করে কিছুক্ষণ পর চেষ্টা করুন।' }]);
     } finally {
@@ -56,13 +75,24 @@ const AIChat: React.FC = () => {
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
               <div className={`max-w-[80%] p-4 rounded-2xl flex gap-3 ${
                 m.role === 'user' ? 'bg-[#1A237E] text-white rounded-br-none' : 'bg-slate-100 dark:bg-slate-700 dark:text-white rounded-bl-none'
               }`}>
                 {m.role === 'bot' && <Bot className="w-5 h-5 shrink-0 mt-1" />}
                 <p className="text-sm leading-relaxed">{m.text}</p>
               </div>
+              
+              {m.showAdminLink && onNavigateToAdmin && (
+                <button 
+                  onClick={onNavigateToAdmin}
+                  className="mt-3 flex items-center gap-2 px-6 py-3 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl shadow-xl hover:scale-105 transition-all text-xs uppercase italic tracking-tighter border border-[#1A237E]/10 animate-in slide-in-from-left-4"
+                >
+                  <Lock className="w-4 h-4" /> 
+                  <span>Go to Admin Login</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           ))}
           {loading && (
