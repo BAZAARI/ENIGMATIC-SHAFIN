@@ -1,9 +1,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { Filter, Search, ChevronDown, SlidersHorizontal, Tag, Star } from 'lucide-react';
-import { Product, Category } from '../types';
-import { CATEGORIES } from '../constants';
-import ProductCard from './ProductCard';
+import { Product, Category } from '../types.ts';
+import { CATEGORIES } from '../constants.tsx';
+import ProductCard from './ProductCard.tsx';
 
 interface ShopProps {
   products: Product[];
@@ -125,16 +125,6 @@ const Shop: React.FC<ShopProps> = ({ products, addToCart, onProductClick }) => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Premium Badge */}
-            <div className="bg-gradient-to-br from-[#1A237E] to-blue-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-               <Tag className="absolute -right-4 -bottom-4 w-24 h-24 text-white/5 rotate-12" />
-               <h4 className="text-xl font-black mb-2">ভেরিফাইড সেলার</h4>
-               <p className="text-blue-200 text-xs mb-6 leading-relaxed">১০০% অথেনটিক পণ্য এবং দ্রুত ডেলিভারির নিশ্চয়তা শুধুমাত্র ভেরিফাইড সেলারদের কাছে।</p>
-               <div className="flex items-center gap-2 text-[#FFD600] font-black text-xs">
-                 <Star className="w-4 h-4 fill-current" /> ৫.০ রেটিং সেলার
-               </div>
             </div>
           </div>
 

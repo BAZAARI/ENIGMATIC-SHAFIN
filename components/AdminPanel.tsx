@@ -73,22 +73,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         </div>
 
         <nav className="space-y-3 flex-grow">
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-[#1A237E] text-white' : 'text-slate-400 hover:bg-white/5'}`}>
+          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-[#1A237E] text-white shadow-lg' : 'text-slate-400 hover:bg-white/5'}`}>
             <LayoutDashboard className="w-5 h-5" /> ড্যাশবোর্ড
           </button>
-          <button onClick={() => setActiveTab('posts')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'posts' ? 'bg-[#1A237E] text-white' : 'text-slate-400 hover:bg-white/5'}`}>
+          <button onClick={() => setActiveTab('posts')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'posts' ? 'bg-[#1A237E] text-white shadow-lg' : 'text-slate-400 hover:bg-white/5'}`}>
             <ClipboardList className="w-5 h-5" /> পোস্ট {pendingPosts > 0 && <span className="ml-auto bg-red-500 text-white text-[10px] px-2 rounded-full">{pendingPosts}</span>}
           </button>
-          <button onClick={() => setActiveTab('boost')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'boost' ? 'bg-[#1A237E] text-white' : 'text-slate-400 hover:bg-white/5'}`}>
-            <Rocket className="w-5 h-5" /> বুস্ট {pendingBoosts > 0 && <span className="ml-auto bg-yellow-500 text-black text-[10px] px-2 rounded-full">{pendingBoosts}</span>}
+          <button onClick={() => setActiveTab('boost')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'boost' ? 'bg-[#1A237E] text-white shadow-lg' : 'text-slate-400 hover:bg-white/5'}`}>
+            <Rocket className="w-5 h-5" /> বুস্ট {pendingBoosts > 0 && <span className="ml-auto bg-yellow-500 text-[#1A237E] text-[10px] px-2 rounded-full font-black">{pendingBoosts}</span>}
           </button>
-          <button onClick={() => setActiveTab('support')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'support' ? 'bg-[#1A237E] text-white' : 'text-slate-400 hover:bg-white/5'}`}>
+          <button onClick={() => setActiveTab('support')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'support' ? 'bg-[#1A237E] text-white shadow-lg' : 'text-slate-400 hover:bg-white/5'}`}>
             <MessageSquare className="w-5 h-5" /> সাপোর্ট চ্যাট {unreadMessages > 0 && <span className="ml-auto bg-purple-500 text-white text-[10px] px-2 rounded-full">{unreadMessages}</span>}
           </button>
-          <button onClick={() => setActiveTab('admins')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'admins' ? 'bg-[#1A237E] text-white' : 'text-slate-400 hover:bg-white/5'}`}>
+          <button onClick={() => setActiveTab('admins')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'admins' ? 'bg-[#1A237E] text-white shadow-lg' : 'text-slate-400 hover:bg-white/5'}`}>
             <ShieldCheck className="w-5 h-5" /> অ্যাডমিন লিস্ট
           </button>
-          <button onClick={() => setActiveTab('settings')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'settings' ? 'bg-[#1A237E] text-white' : 'text-slate-400 hover:bg-white/5'}`}>
+          <button onClick={() => setActiveTab('settings')} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'settings' ? 'bg-[#1A237E] text-white shadow-lg' : 'text-slate-400 hover:bg-white/5'}`}>
             <Settings className="w-5 h-5" /> সেটিংস
           </button>
         </nav>
@@ -102,7 +102,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       <main className="flex-1 ml-72 p-12">
         <header className="flex justify-between items-start mb-16">
           <div>
-            <h1 className="text-6xl font-black text-white mb-3">Settings</h1>
+            <h1 className="text-6xl font-black text-white mb-3 capitalize">{activeTab}</h1>
             <p className="text-slate-500 font-medium text-lg">আপনার মার্কেটপ্লেস পরিচালনা করুন।</p>
           </div>
           <div className="p-3 bg-slate-900 rounded-2xl border border-white/5">
@@ -154,7 +154,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         )}
 
         {/* Other tabs remain functional */}
-        {activeTab === 'dashboard' && <div className="text-slate-500">Dashboard functionality is active.</div>}
+        {activeTab === 'dashboard' && <div className="text-slate-500 font-bold text-2xl">Dashboard content is loading...</div>}
       </main>
     </div>
   );

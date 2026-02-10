@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Star, ShoppingCart, Eye, Check } from 'lucide-react';
-import { Product } from '../types';
+import { Product } from '../types.ts';
 
 interface ProductCardProps {
   product: Product;

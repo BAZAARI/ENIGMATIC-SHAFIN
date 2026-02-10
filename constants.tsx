@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Truck, ShieldCheck, RefreshCw, Phone } from 'lucide-react';
-import { Product, Category, BoostPlan, VerifyPlan } from './types';
+import { Product, Category, BoostPlan, VerifyPlan } from './types.ts';
 
 export const COLORS = {
   primary: '#1A237E', // Royal Blue
