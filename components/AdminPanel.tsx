@@ -408,15 +408,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
                     <div className="lg:col-span-2 bg-[#0F172A] border border-white/5 rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl">
                        <div className="p-6 border-b border-white/5 bg-black/20 flex justify-between items-center">
-                          <span className="font-black uppercase tracking-tighter italic text-[#FFD600] flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Support Terminal</span>
-                          <span className="text-[10px] text-slate-500 font-mono">E2EE ACTIVE</span>
+                          <div className="flex items-center gap-3">
+                             <div className="bg-[#FFD600] w-8 h-8 rounded-lg flex items-center justify-center font-black text-[#1A237E] text-sm">B</div>
+                             <span className="font-black uppercase tracking-tighter italic text-[#FFD600] flex items-center gap-2">Support Terminal</span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 font-mono uppercase">Secure Network</span>
                        </div>
                        
                        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 custom-scrollbar bg-black/10">
                           {supportMessages.map(m => (
                             <div key={m.id} className={`flex ${m.isAdmin ? 'justify-end' : 'justify-start'}`}>
                                <div className={`p-4 md:p-5 rounded-2xl max-w-[95%] md:max-w-[80%] text-sm shadow-xl transition-all hover:scale-[1.01] ${m.isAdmin ? 'bg-[#1A237E] text-white rounded-br-none border border-white/10' : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'}`}>
-                                 <p className="leading-relaxed">{m.text}</p>
+                                 <p className="leading-relaxed font-medium">{m.text}</p>
                                  <div className="flex justify-between items-center mt-3 gap-6">
                                    <p className={`text-[8px] font-black uppercase tracking-widest ${m.isAdmin ? 'text-blue-300' : 'text-slate-500'}`}>{m.timestamp}</p>
                                    {!m.isAdmin && <p className="text-[8px] font-black text-slate-600 truncate max-w-[100px]">{m.userEmail}</p>}

@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Loader2, Lock, ChevronRight, X } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Loader2, Lock, ChevronRight, X, Circle } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
 interface AIChatProps {
@@ -64,56 +64,75 @@ const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 h-[600px] flex flex-col animate-in fade-in duration-500">
       <div className="bg-white dark:bg-slate-800 rounded-[40px] shadow-2xl flex-1 flex flex-col overflow-hidden border border-slate-100 dark:border-slate-700 relative">
-        <div className="p-6 bg-[#1A237E] text-white flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#FFD600] p-2 rounded-xl">
-              <Sparkles className="w-5 h-5 text-[#1A237E]" />
+        {/* Updated AI Chat Header with App Logo */}
+        <div className="p-6 bg-[#1A237E] text-white flex items-center justify-between shadow-lg relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse pointer-events-none"></div>
+          
+          <div className="flex items-center gap-4 relative z-10">
+            {/* Branded App Logo */}
+            <div className="relative flex items-center justify-center scale-90">
+              <div className="bg-white/10 w-12 h-12 rounded-xl rotate-3 absolute"></div>
+              <div className="bg-[#FFD600] w-12 h-12 rounded-xl -rotate-3 border-2 border-[#1A237E] flex items-center justify-center relative z-10 shadow-lg">
+                <span className="text-[#1A237E] font-black text-2xl italic">B</span>
+              </div>
             </div>
+            
             <div>
-              <h3 className="font-black uppercase tracking-tighter italic">Bazaari Intelligence</h3>
-              <p className="text-[10px] text-blue-200 uppercase tracking-widest font-black">Powered by Gemini</p>
+              <h3 className="text-xl font-black uppercase tracking-tighter italic leading-none">Bazaari Intelligence</h3>
+              <div className="flex items-center gap-1.5 text-[9px] text-green-400 font-black uppercase tracking-widest mt-1.5">
+                <Circle className="w-2 h-2 fill-green-400 animate-pulse" /> 
+                <span>AI Core Active</span>
+              </div>
             </div>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10">
+             <div className="bg-white/10 p-2.5 rounded-xl border border-white/10 backdrop-blur-sm">
+               <Sparkles className="w-5 h-5 text-[#FFD600] animate-bounce" />
+             </div>
           </div>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-slate-50/50 dark:bg-slate-900/50">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-slate-50/50 dark:bg-slate-950/40">
           {messages.map((m, i) => (
             <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
-              <div className={`max-w-[85%] p-4 rounded-2xl flex gap-3 shadow-md ${
-                m.role === 'user' ? 'bg-[#1A237E] text-white rounded-br-none' : 'bg-white dark:bg-slate-700 dark:text-white rounded-bl-none'
+              <div className={`max-w-[85%] p-5 rounded-3xl flex gap-3 shadow-sm transition-all hover:scale-[1.01] ${
+                m.role === 'user' 
+                  ? 'bg-[#1A237E] text-white rounded-br-none border border-white/5' 
+                  : 'bg-white dark:bg-slate-700 dark:text-white rounded-bl-none border border-slate-100 dark:border-slate-600'
               }`}>
-                {m.role === 'bot' && <Bot className="w-5 h-5 shrink-0 mt-1 text-[#FFD600]" />}
+                {m.role === 'bot' && <div className="p-1 bg-blue-50 dark:bg-slate-800 rounded-lg shrink-0 h-fit"><Bot className="w-5 h-5 text-[#1A237E] dark:text-[#FFD600]" /></div>}
                 <p className="text-sm leading-relaxed font-medium">{m.text}</p>
               </div>
               
               {m.showAdminLink && onNavigateToAdmin && (
                 <button 
                   onClick={onNavigateToAdmin}
-                  className="mt-3 flex items-center gap-2 px-6 py-3 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-xs uppercase italic tracking-tighter border-2 border-[#1A237E]"
+                  className="mt-4 flex items-center gap-3 px-8 py-4 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all text-sm uppercase italic tracking-tighter border-2 border-[#1A237E] group"
                 >
-                  <Lock className="w-4 h-4" /> 
+                  <Lock className="w-4 h-4 group-hover:rotate-12 transition-transform" /> 
                   <span>Admin Portal-এ যান</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               )}
             </div>
           ))}
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-white dark:bg-slate-700 p-4 rounded-2xl flex items-center gap-2 shadow-sm">
-                <Loader2 className="w-4 h-4 animate-spin text-[#1A237E]" />
-                <span className="text-xs font-bold text-slate-500 italic">Bazaari thinking...</span>
+              <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl flex items-center gap-3 shadow-md border border-slate-100 dark:border-slate-700">
+                <Loader2 className="w-5 h-5 animate-spin text-[#1A237E] dark:text-[#FFD600]" />
+                <span className="text-xs font-black text-slate-500 uppercase tracking-widest italic animate-pulse">Bazaari thinking...</span>
               </div>
             </div>
           )}
         </div>
 
-        <div className="p-6 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <div className="p-6 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
           <div className="flex gap-3">
             <input 
               type="text" 
-              placeholder="যেকোনো প্রশ্ন করুন..." 
-              className="flex-1 px-6 py-4 bg-slate-100 dark:bg-slate-900 dark:text-white rounded-2xl outline-none focus:ring-2 focus:ring-[#1A237E] transition-all font-medium"
+              placeholder="আপনার প্রশ্ন এখানে লিখুন..." 
+              className="flex-1 px-6 py-5 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-[2rem] outline-none border-2 border-transparent focus:border-[#1A237E] transition-all font-bold placeholder:text-slate-400"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
@@ -121,9 +140,9 @@ const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
             <button 
               onClick={handleSend}
               disabled={loading}
-              className="p-4 bg-[#1A237E] text-[#FFD600] rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl disabled:opacity-50"
+              className="p-5 bg-[#1A237E] text-[#FFD600] rounded-[2rem] hover:scale-105 active:scale-95 transition-all shadow-2xl disabled:opacity-50 group"
             >
-              <Send className="w-6 h-6" />
+              <Send className="w-7 h-7 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </button>
           </div>
         </div>

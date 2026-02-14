@@ -21,10 +21,9 @@ import Footer from './components/Footer.tsx';
 import BottomNav from './components/BottomNav.tsx';
 import { Page, User, Product, CartItem, BoostRequest, PostRequest, VerificationRequest, SupportMessage, AdminSettings, Language } from './types.ts';
 import { CATEGORIES, PRODUCTS, BOOST_PLANS, VERIFY_PLANS } from './constants.tsx';
-import { ArrowRight, Sparkles, X, UserPlus, ShieldCheck, CheckCircle, Headset, Users, UserCheck, MessageSquare, AlertCircle, Lock, Activity, Clock, ShieldEllipsis, RefreshCw, Send, Loader2, BellRing, Copy, Eye } from 'lucide-react';
+import { ArrowRight, Sparkles, X, UserPlus, ShieldCheck, CheckCircle, Headset, Users, UserCheck, MessageSquare, AlertCircle, Lock, Activity, Clock, ShieldEllipsis, RefreshCw, Send, Loader2, BellRing, Copy, Eye, MailCheck } from 'lucide-react';
 
 const PERSISTENCE_KEY = 'bazaari_master_data_v4';
-// Launch date set to Feb 14, 2026, 12:00 AM as requested
 const LAUNCH_DATE = new Date('2026-02-14T00:00:00'); 
 
 const App: React.FC = () => {
@@ -83,13 +82,11 @@ const App: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   
-  // Auth Form State
   const [authIdentity, setAuthIdentity] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
   const [authUsername, setAuthUsername] = useState('');
 
-  // OTP Verification States
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [generatedOTP, setGeneratedOTP] = useState('');
   const [userOTP, setUserOTP] = useState(['', '', '', '', '', '']);
@@ -118,7 +115,6 @@ const App: React.FC = () => {
     else document.documentElement.classList.remove('dark');
   }, [currentUser, isDarkMode, language]);
 
-  // Handle OTP Timer
   useEffect(() => {
     let interval: any;
     if (otpTimer > 0) {
@@ -130,16 +126,14 @@ const App: React.FC = () => {
   const sendSimulatedOTP = (email: string) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOTP(otp);
-    setOtpTimer(30);
+    setOtpTimer(60); // Extended timer for better UX
     
-    // Show on-screen toast for simulation
     setNotification({
-      msg: `[SIMULATED EMAIL] To: ${email} | Code: ${otp}`,
+      msg: `[GMAIL SIMULATION] To: ${email} | 6-Digit Code: ${otp}`,
       type: 'info'
     });
     
-    // Clear toast after 10 seconds
-    setTimeout(() => setNotification(null), 10000);
+    setTimeout(() => setNotification(null), 12000);
   };
 
   const handleAuthSubmit = (e: React.FormEvent) => {
@@ -180,7 +174,7 @@ const App: React.FC = () => {
         setPendingUser(user);
         sendSimulatedOTP(user.email);
       } else {
-        alert(language === 'bn' ? 'ভুল তথ্য!' : 'Invalid credentials');
+        alert(language === 'bn' ? 'ভুল তথ্য! সঠিক ইমেইল/ইউজারনেম ও পাসওয়ার্ড দিন।' : 'Invalid credentials. Please check your email/username and password.');
         return;
       }
     }
@@ -201,12 +195,12 @@ const App: React.FC = () => {
         setShowOTPModal(false);
         setIsOTPVerifying(false);
         setPendingUser(null);
-        setNotification({ msg: 'Verification Successful! Welcome to Bazaari.', type: 'success' });
+        setNotification({ msg: language === 'bn' ? 'ভেরিফিকেশন সফল হয়েছে! স্বাগতম।' : 'Verification Successful! Welcome to Bazaari.', type: 'success' });
         setTimeout(() => setNotification(null), 3000);
         setAuthIdentity(''); setAuthPassword(''); setAuthName(''); setAuthUsername('');
       }, 1500);
     } else {
-      alert(language === 'bn' ? 'ভুল ওটিপি কোড! আবার চেষ্টা করুন।' : 'Invalid OTP Code! Try again.');
+      alert(language === 'bn' ? 'ভুল ওটিপি কোড! অনুগ্রহ করে আপনার জিমেইল ইনবক্স চেক করুন।' : 'Invalid OTP Code! Please check your Gmail inbox again.');
     }
   };
 
@@ -259,14 +253,13 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-300 pb-20 lg:pb-0 ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* Simulation Notification Toast */}
       {notification && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[300] w-full max-w-sm px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-in slide-in-from-top duration-300 ${notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-[#1A237E] text-[#FFD600] border border-[#FFD600]/30'}`}>
           <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center shrink-0">
              {notification.type === 'success' ? <CheckCircle className="w-6 h-6" /> : <BellRing className="w-6 h-6 animate-swing" />}
           </div>
           <div className="flex-1">
-            <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Bazaari System Alert</p>
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Bazaari Identity System</p>
             <p className="font-bold text-sm">{notification.msg}</p>
           </div>
           <button onClick={() => setNotification(null)} className="p-1 hover:bg-white/10 rounded-lg"><X className="w-4 h-4" /></button>
@@ -409,7 +402,7 @@ const App: React.FC = () => {
             <form onSubmit={handleAuthSubmit} className="space-y-4">
               {isSignup && <input type="text" placeholder="Full Name" className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authName} onChange={e => setAuthName(e.target.value)} required />}
               {isSignup && <input type="text" placeholder="Username (abcd...z0..9)" className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authUsername} onChange={e => setAuthUsername(e.target.value)} required />}
-              <input type="text" placeholder={isSignup ? "Email Address" : "Email or Username"} className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authIdentity} onChange={e => setAuthIdentity(e.target.value)} required />
+              <input type="text" placeholder={isSignup ? "Email Address (Gmail)" : "Email or Username"} className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authIdentity} onChange={e => setAuthIdentity(e.target.value)} required />
               <input type="password" placeholder="Password" className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required />
               <button type="submit" className="w-full py-5 bg-[#1A237E] text-[#FFD600] font-black rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 text-lg uppercase">{isSignup ? 'Join Now' : 'Login'}</button>
             </form>
@@ -422,21 +415,23 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* OTP Verification Modal */}
+      {/* Enhanced OTP Verification Modal with 6-Digit Support */}
       {showOTPModal && (
         <div className="fixed inset-0 z-[150] bg-[#070B14]/95 backdrop-blur-xl flex items-center justify-center p-4">
           <div className="bg-slate-900 border-4 border-[#FFD600] p-10 md:p-14 rounded-[4rem] w-full max-w-lg shadow-[0_0_50px_rgba(255,214,0,0.3)] text-center relative overflow-hidden animate-in zoom-in">
              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#FFD600] to-transparent animate-pulse"></div>
              
              <div className="w-24 h-24 bg-[#FFD600]/10 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-[#FFD600]/20 rotate-3">
-                <ShieldEllipsis className="text-[#FFD600] w-12 h-12" />
+                <MailCheck className="text-[#FFD600] w-12 h-12" />
              </div>
 
-             <h2 className="text-3xl font-black text-white mb-2 italic uppercase tracking-tighter">Security Verification</h2>
-             <p className="text-slate-400 text-sm mb-10 font-medium">
+             <h2 className="text-3xl font-black text-white mb-2 italic uppercase tracking-tighter">Email Verification</h2>
+             <p className="text-slate-400 text-sm mb-10 font-medium px-4">
                {language === 'bn' 
-                ? 'আপনার ইমেইলে একটি ৬ ডিজিটের ওটিপি পাঠানো হয়েছে। সেটি এখানে দিন।' 
-                : 'A 6-digit OTP has been sent to your email. Please enter it below.'}
+                ? 'আপনার জিমেইল ইনবক্সে একটি ৬ ডিজিটের ভেরিফিকেশন কোড পাঠানো হয়েছে।' 
+                : 'A 6-digit verification code has been sent to your Gmail inbox.'}
+               <br />
+               <span className="text-[#FFD600] font-black">{pendingUser?.email}</span>
              </p>
 
              <div className="flex justify-between gap-2 mb-10">
@@ -467,7 +462,7 @@ const App: React.FC = () => {
                disabled={userOTP.some(d => !d) || isOTPVerifying}
                className="w-full py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all text-xl uppercase italic flex items-center justify-center gap-3 disabled:opacity-50"
              >
-               {isOTPVerifying ? <Loader2 className="animate-spin" /> : <><CheckCircle className="w-6 h-6" /> Verify Code</>}
+               {isOTPVerifying ? <Loader2 className="animate-spin" /> : <><ShieldCheck className="w-6 h-6" /> Confirm & Activate</>}
              </button>
 
              <div className="mt-8 flex flex-col items-center gap-4">
@@ -481,7 +476,7 @@ const App: React.FC = () => {
                   disabled={otpTimer > 0}
                   className="text-[#FFD600] font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:opacity-80 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  <RefreshCw className={`w-4 h-4 ${otpTimer === 0 ? 'animate-spin' : ''}`} /> Resend OTP
+                  <RefreshCw className={`w-4 h-4 ${otpTimer === 0 ? 'animate-spin' : ''}`} /> Resend to Gmail
                 </button>
              </div>
 
@@ -489,7 +484,7 @@ const App: React.FC = () => {
                onClick={() => { setShowOTPModal(false); setPendingUser(null); }}
                className="mt-10 text-slate-600 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors"
              >
-               Cancel Verification
+               Cancel & Go Back
              </button>
           </div>
         </div>

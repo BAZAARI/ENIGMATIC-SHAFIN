@@ -1,6 +1,5 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-// Added MessageSquare to the import list
 import { Send, X, Headset, Circle, MessageSquare } from 'lucide-react';
 import { SupportMessage } from '../types';
 
@@ -30,11 +29,17 @@ const SupportChat: React.FC<SupportChatProps> = ({ messages, onSend, onClose }) 
         {/* Header */}
         <div className="p-8 bg-[#1A237E] text-white flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="bg-[#FFD600] p-3 rounded-2xl"><Headset className="text-[#1A237E] w-6 h-6" /></div>
+            {/* App Logo in Inbox */}
+            <div className="relative flex items-center justify-center scale-90">
+              <div className="bg-white/10 w-12 h-12 rounded-xl rotate-3 absolute"></div>
+              <div className="bg-[#FFD600] w-12 h-12 rounded-xl -rotate-3 border-2 border-[#1A237E] flex items-center justify-center relative z-10">
+                <span className="text-[#1A237E] font-black text-2xl italic">B</span>
+              </div>
+            </div>
             <div>
-              <h3 className="text-xl font-black">লাইভ সাপোর্ট</h3>
+              <h3 className="text-xl font-black italic tracking-tighter uppercase">Bazaari Support</h3>
               <div className="flex items-center gap-1.5 text-[10px] text-green-400 font-bold uppercase tracking-widest mt-1">
-                <Circle className="w-2 h-2 fill-green-400" /> Admin is Online
+                <Circle className="w-2 h-2 fill-green-400 animate-pulse" /> Admin is Online
               </div>
             </div>
           </div>
@@ -48,7 +53,7 @@ const SupportChat: React.FC<SupportChatProps> = ({ messages, onSend, onClose }) 
                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
                   <MessageSquare className="w-10 h-10 text-[#1A237E] dark:text-[#FFD600]" />
                </div>
-               <p className="text-slate-500 max-w-xs">অ্যাডমিনকে যেকোনো প্রশ্ন করুন। আমরা খুব দ্রুত আপনার উত্তর দিব।</p>
+               <p className="text-slate-500 max-w-xs font-bold uppercase text-xs tracking-widest">অ্যাডমিনকে যেকোনো প্রশ্ন করুন। আমরা খুব দ্রুত আপনার উত্তর দিব।</p>
             </div>
           )}
           {messages.map((m) => (
@@ -71,16 +76,16 @@ const SupportChat: React.FC<SupportChatProps> = ({ messages, onSend, onClose }) 
             <input 
               type="text" 
               placeholder="আপনার মেসেজ এখানে লিখুন..." 
-              className="flex-1 px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none focus:ring-2 focus:ring-[#1A237E] transition-all"
+              className="flex-1 px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none focus:ring-2 focus:ring-[#1A237E] transition-all font-bold"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && handleSend()}
             />
             <button 
               onClick={handleSend}
-              className="px-8 bg-[#1A237E] text-[#FFD600] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl flex items-center gap-2"
+              className="px-8 bg-[#1A237E] text-[#FFD600] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl flex items-center gap-2 uppercase italic text-xs tracking-widest"
             >
-              <Send className="w-5 h-5" /> পাঠান
+              <Send className="w-4 h-4" /> পাঠান
             </button>
           </div>
         </div>
