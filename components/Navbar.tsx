@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Search, ShoppingBag, User, Menu, X, MessageCircle, Wallet, PlusSquare, Moon, Sun, Sparkles, UserPlus, ShieldCheck, Languages, Headset, Lock } from 'lucide-react';
 import { Page, User as UserType, Language } from '../types';
 
@@ -31,6 +31,32 @@ const Navbar: React.FC<NavbarProps> = ({
   onLogoClick
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const clickCountRef = useRef(0);
+  const lastClickTimeRef = useRef(0);
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    const now = Date.now();
+    // Allow up to 800ms between clicks for mobile accessibility
+    if (now - lastClickTimeRef.current < 800) {
+      clickCountRef.current += 1;
+    } else {
+      clickCountRef.current = 1;
+    }
+    lastClickTimeRef.current = now;
+
+    if (clickCountRef.current === 5) {
+      // Secret access to admin
+      setCurrentPage(Page.AdminLogin);
+      clickCountRef.current = 0; 
+      // Vibrate if mobile supports it for tactile feedback
+      if (window.navigator.vibrate) window.navigator.vibrate(50);
+    } else if (clickCountRef.current === 1) {
+      // Single click still goes home
+      setCurrentPage(Page.Home);
+    }
+    
+    if (onLogoClick) onLogoClick();
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white dark:bg-slate-900 shadow-sm border-b border-slate-100 dark:border-slate-800 transition-colors">
@@ -38,11 +64,8 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="flex justify-between items-center h-20">
           
           <div 
-            className="flex items-center cursor-pointer group" 
-            onClick={() => {
-              setCurrentPage(Page.Home);
-              if (onLogoClick) onLogoClick();
-            }}
+            className="flex items-center cursor-pointer group active:scale-95 transition-transform select-none" 
+            onClick={handleLogoClick}
           >
             <div className="relative flex items-center justify-center mr-3 transition-transform group-hover:scale-105">
               <div className="bg-[#1A237E] w-12 h-12 rounded-xl rotate-3 absolute group-hover:rotate-6 transition-transform"></div>
@@ -64,11 +87,6 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <div className="hidden lg:flex items-center space-x-4">
-            <button onClick={() => setCurrentPage(Page.AdminLogin)} className="p-2 bg-[#1A237E] text-[#FFD600] rounded-xl transition-all hover:scale-110 flex items-center gap-2 px-3">
-              <Lock className="w-4 h-4" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Admin</span>
-            </button>
-
             <button onClick={() => setCurrentPage(Page.SupportChat)} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-[#FFD600] transition-all hover:scale-110" title={language === 'bn' ? 'লাইভ সাপোর্ট' : 'Live Support'}>
               <Headset className="w-5 h-5" />
             </button>
@@ -100,8 +118,8 @@ const Navbar: React.FC<NavbarProps> = ({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <button onClick={onLoginClick} className="px-5 py-2 text-[#1A237E] dark:text-white rounded-full font-black text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-all uppercase italic">Login</button>
-                  <button onClick={onSignupClick} className="px-5 py-2 bg-[#1A237E] text-[#FFD600] rounded-full font-black text-sm hover:bg-opacity-90 transition-all shadow-lg uppercase italic border-2 border-[#FFD600]">Signup</button>
+                  <button onClick={onLoginClick} className="px-5 py-2 text-[#1A237E] dark:text-white rounded-full font-black text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-all uppercase italic text-[10px] tracking-widest">Login</button>
+                  <button onClick={onSignupClick} className="px-5 py-2 bg-[#1A237E] text-[#FFD600] rounded-full font-black text-sm hover:bg-opacity-90 transition-all shadow-lg uppercase italic border-2 border-[#FFD600] text-[10px] tracking-widest">Signup</button>
                 </div>
               )}
             </div>
@@ -110,6 +128,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="lg:hidden flex items-center space-x-4">
              <button onClick={() => setCurrentPage(Page.SupportChat)} className="p-2 text-slate-600 dark:text-[#FFD600]"><Headset className="w-6 h-6" /></button>
              <button onClick={() => setLanguage(language === 'bn' ? 'en' : 'bn')} className="p-2 text-slate-600 dark:text-[#FFD600]"><Languages className="w-6 h-6" /></button>
+             <button className="text-[#1A237E] dark:text-white" onClick={() => setIsDarkMode(!isDarkMode)}>{isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}</button>
              <button className="text-[#1A237E] dark:text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>{isMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}</button>
           </div>
         </div>
@@ -119,7 +138,6 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="lg:hidden bg-white dark:bg-slate-900 border-t p-6 space-y-4 shadow-2xl animate-in slide-in-from-top duration-300">
           <button onClick={() => {setCurrentPage(Page.Home); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">হোম</button>
           <button onClick={() => {setCurrentPage(Page.Shop); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">শপ</button>
-          <button onClick={() => {setCurrentPage(Page.AdminLogin); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black text-[#1A237E] dark:text-[#FFD600] uppercase italic tracking-tighter">অ্যাডমিন পোর্টাল</button>
           <button onClick={() => {setCurrentPage(Page.SupportChat); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">লাইভ সাপোর্ট</button>
           <button onClick={() => {setCurrentPage(Page.PostAd); setIsMenuOpen(false);}} className="block w-full py-4 bg-[#FFD600] text-[#1A237E] rounded-2xl font-black uppercase italic tracking-tighter shadow-lg">অ্যাড দিন</button>
           <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -129,8 +147,8 @@ const Navbar: React.FC<NavbarProps> = ({
                </button>
              ) : (
                <>
-                 <button onClick={() => { onLoginClick(); setIsMenuOpen(false); }} className="flex-1 py-3 border border-[#1A237E] text-[#1A237E] dark:text-white rounded-xl font-bold uppercase italic">Login</button>
-                 <button onClick={() => { onSignupClick(); setIsMenuOpen(false); }} className="flex-1 py-3 bg-[#1A237E] text-white rounded-xl font-bold uppercase italic">Signup</button>
+                 <button onClick={() => { onLoginClick(); setIsMenuOpen(false); }} className="flex-1 py-3 border border-[#1A237E] text-[#1A237E] dark:text-white rounded-xl font-bold uppercase italic text-[10px] tracking-widest">Login</button>
+                 <button onClick={() => { onSignupClick(); setIsMenuOpen(false); }} className="flex-1 py-3 bg-[#1A237E] text-white rounded-xl font-bold uppercase italic text-[10px] tracking-widest">Signup</button>
                </>
              )}
           </div>

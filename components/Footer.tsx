@@ -105,9 +105,6 @@ const Footer: React.FC<FooterProps> = ({ setCurrentPage, onAdminClick, language 
           <div className="flex gap-6 items-center">
              <a href="#" className="text-xs font-bold text-slate-400 hover:text-[#1A237E]">{t.privacy}</a>
              <a href="#" className="text-xs font-bold text-slate-400 hover:text-[#1A237E]">{t.terms}</a>
-             <button onClick={onAdminClick} className="flex items-center gap-1 text-[10px] font-black text-slate-300 hover:text-[#1A237E] dark:hover:text-[#FFD600] uppercase tracking-widest ml-4">
-               <Lock className="w-3 h-3" /> {t.admin}
-             </button>
           </div>
         </div>
       </div>

@@ -62,11 +62,18 @@
         .dark .text-slate-600 { color: #cbd5e1; }
         .dark .text-slate-500 { color: #94a3b8; }
         .dark .text-slate-800 { color: #f8fafc; }
+
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #1A237E;
+          border-radius: 10px;
+        }
     </style>
-    <!-- Define a minimal process object to avoid ReferenceErrors in the browser -->
-    <script>
-      window.process = { env: { API_KEY: "" } };
-    </script>
 <script type="importmap">
 {
   "imports": {
@@ -81,7 +88,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 transition-colors duration-300">
     <div id="root"></div>
-    <!-- Entry point script -->
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>
