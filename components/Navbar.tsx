@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Search, ShoppingBag, User, Menu, X, MessageCircle, Wallet, PlusSquare, Moon, Sun, Sparkles, UserPlus, ShieldCheck, Languages, Headset, Lock } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, X, MessageCircle, Wallet, PlusSquare, Moon, Sun, Sparkles, UserPlus, ShieldCheck, Languages, Headset, Lock, LogOut } from 'lucide-react';
 import { Page, User as UserType, Language } from '../types';
 
 interface NavbarProps {
@@ -14,6 +14,7 @@ interface NavbarProps {
   user: UserType | null;
   onLoginClick: () => void;
   onSignupClick: () => void;
+  onLogout: () => void;
   onLogoClick?: () => void;
 }
 
@@ -28,6 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({
   user, 
   onLoginClick, 
   onSignupClick,
+  onLogout,
   onLogoClick
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,7 +38,6 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const handleLogoClick = (e: React.MouseEvent) => {
     const now = Date.now();
-    // Allow up to 800ms between clicks for mobile accessibility
     if (now - lastClickTimeRef.current < 800) {
       clickCountRef.current += 1;
     } else {
@@ -45,13 +46,10 @@ const Navbar: React.FC<NavbarProps> = ({
     lastClickTimeRef.current = now;
 
     if (clickCountRef.current === 5) {
-      // Secret access to admin
       setCurrentPage(Page.AdminLogin);
       clickCountRef.current = 0; 
-      // Vibrate if mobile supports it for tactile feedback
       if (window.navigator.vibrate) window.navigator.vibrate(50);
     } else if (clickCountRef.current === 1) {
-      // Single click still goes home
       setCurrentPage(Page.Home);
     }
     
@@ -105,15 +103,22 @@ const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <div className="flex items-center gap-2 border-l pl-4 border-slate-200 dark:border-slate-700">
-              <button onClick={() => setCurrentPage(Page.Wallet)} className="p-2 text-slate-400 hover:text-[#1A237E] dark:hover:text-white transition-colors"><Wallet className="w-6 h-6" /></button>
+              <button onClick={() => setCurrentPage(Page.Wallet)} className="p-2 text-slate-400 hover:text-[#1A237E] dark:hover:text-white transition-colors" title={language === 'bn' ? 'ওয়ালেট' : 'Wallet'}><Wallet className="w-6 h-6" /></button>
               <button onClick={() => setCurrentPage(Page.Cart)} className="p-2 text-slate-400 hover:text-[#1A237E] dark:hover:text-white relative transition-colors">
                 <ShoppingBag className="w-6 h-6" />
                 {cartCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full animate-bounce shadow-sm">{cartCount}</span>}
               </button>
               {user ? (
-                <div className="relative">
-                  <button onClick={() => setCurrentPage(Page.Wallet)} className="bg-[#1A237E] text-white p-2 rounded-full hover:bg-opacity-90 transition-all shadow-md border-2 border-white dark:border-slate-800">
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setCurrentPage(Page.Wallet)} className="bg-[#1A237E] text-white p-2 rounded-full hover:bg-opacity-90 transition-all shadow-md border-2 border-white dark:border-slate-800" title={language === 'bn' ? 'প্রোফাইল' : 'Profile'}>
                     <User className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={onLogout} 
+                    className="p-2 text-red-400 hover:text-red-500 transition-colors"
+                    title={language === 'bn' ? 'লগ আউট' : 'Logout'}
+                  >
+                    <LogOut className="w-5 h-5" />
                   </button>
                 </div>
               ) : (
@@ -140,16 +145,24 @@ const Navbar: React.FC<NavbarProps> = ({
           <button onClick={() => {setCurrentPage(Page.Shop); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">শপ</button>
           <button onClick={() => {setCurrentPage(Page.SupportChat); setIsMenuOpen(false);}} className="block w-full text-left py-3 font-black dark:text-white uppercase italic tracking-tighter">লাইভ সাপোর্ট</button>
           <button onClick={() => {setCurrentPage(Page.PostAd); setIsMenuOpen(false);}} className="block w-full py-4 bg-[#FFD600] text-[#1A237E] rounded-2xl font-black uppercase italic tracking-tighter shadow-lg">অ্যাড দিন</button>
-          <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
              {user ? (
-               <button onClick={() => {setCurrentPage(Page.Wallet); setIsMenuOpen(false);}} className="flex-1 py-3 bg-[#1A237E] text-white rounded-xl font-bold flex items-center justify-center gap-2">
-                 প্রোফাইল
-               </button>
+               <div className="space-y-2 w-full">
+                 <button onClick={() => {setCurrentPage(Page.Wallet); setIsMenuOpen(false);}} className="w-full py-3 bg-[#1A237E] text-white rounded-xl font-bold flex items-center justify-center gap-2">
+                   <User className="w-4 h-4" /> প্রোফাইল
+                 </button>
+                 <button 
+                  onClick={() => { onLogout(); setIsMenuOpen(false); }} 
+                  className="w-full py-3 border border-red-200 text-red-500 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-50"
+                 >
+                   <LogOut className="w-4 h-4" /> {language === 'bn' ? 'লগ আউট' : 'Logout'}
+                 </button>
+               </div>
              ) : (
-               <>
+               <div className="flex gap-4">
                  <button onClick={() => { onLoginClick(); setIsMenuOpen(false); }} className="flex-1 py-3 border border-[#1A237E] text-[#1A237E] dark:text-white rounded-xl font-bold uppercase italic text-[10px] tracking-widest">Login</button>
                  <button onClick={() => { onSignupClick(); setIsMenuOpen(false); }} className="flex-1 py-3 bg-[#1A237E] text-white rounded-xl font-bold uppercase italic text-[10px] tracking-widest">Signup</button>
-               </>
+               </div>
              )}
           </div>
         </div>
