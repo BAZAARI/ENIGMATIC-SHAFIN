@@ -21,7 +21,7 @@ import Footer from './components/Footer.tsx';
 import BottomNav from './components/BottomNav.tsx';
 import { Page, User, Product, CartItem, BoostRequest, PostRequest, VerificationRequest, SupportMessage, AdminSettings, Language } from './types.ts';
 import { CATEGORIES, PRODUCTS, BOOST_PLANS, VERIFY_PLANS } from './constants.tsx';
-import { ArrowRight, Sparkles, X, UserPlus, ShieldCheck, CheckCircle, Headset, Users, UserCheck, MessageSquare, AlertCircle, Lock, Activity, Clock, ShieldEllipsis, RefreshCw, Send, Loader2, BellRing, Copy, Eye, MailCheck } from 'lucide-react';
+import { ArrowRight, Sparkles, X, UserPlus, ShieldCheck, CheckCircle, Headset, Users, UserCheck, MessageSquare, AlertCircle, Lock, Activity, Clock, ShieldEllipsis, RefreshCw, Send, Loader2, BellRing, Copy, Eye, MailCheck, MessageCircle } from 'lucide-react';
 
 const PERSISTENCE_KEY = 'bazaari_master_data_v4';
 const LAUNCH_DATE = new Date('2026-02-14T00:00:00'); 
@@ -127,13 +127,10 @@ const App: React.FC = () => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOTP(otp);
     setOtpTimer(60); 
-    
-    // Simulating Gmail inbox notification
     setNotification({
       msg: `[Gmail Inbox] To: ${email} | New Login/Signup Code: ${otp}`,
       type: 'info'
     });
-    
     setTimeout(() => setNotification(null), 12000);
   };
 
@@ -148,7 +145,6 @@ const App: React.FC = () => {
         alert(language === 'bn' ? 'এই ইউজারনেমটি ইতিমধ্যে ব্যবহৃত হয়েছে।' : 'Username already taken.');
         return;
       }
-      
       const nextUid = (mockUsers.length + 1).toString().padStart(6, '0');
       const newUser: User = {
         uid: nextUid,
@@ -166,7 +162,6 @@ const App: React.FC = () => {
         (u.email.toLowerCase() === authIdentity.toLowerCase() || u.username.toLowerCase() === authIdentity.toLowerCase()) && 
         u.password === authPassword
       );
-
       if (user) {
         if (user.isPermanentlyBanned) {
           alert(language === 'bn' ? 'আপনার অ্যাকাউন্টটি স্থায়ীভাবে ব্যান করা হয়েছে।' : 'Account permanently banned.');
@@ -252,7 +247,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-300 pb-20 lg:pb-0 ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 pb-24 lg:pb-0 ${isDarkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       
       {notification && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[300] w-full max-w-sm px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-in slide-in-from-top duration-300 ${notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-[#1A237E] text-[#FFD600] border border-[#FFD600]/30'}`}>
@@ -359,7 +354,7 @@ const App: React.FC = () => {
             {currentPage === Page.Shop && <Shop language={language} products={approvedProducts} adminEmails={adminEmails} addToCart={(p) => setCart(prev => [...prev, {product: p, quantity: 1}])} onProductClick={(p) => { setSelectedProduct(p); setCurrentPage(Page.ProductDetail); }} />}
             {currentPage === Page.PostAd && <PostAd language={language} isLoggedIn={!!currentUser} isVerified={currentUser?.isVerified || false} userName={currentUser?.name || ''} userEmail={currentUser?.email} postCountToday={currentUser?.postCountToday || 0} settings={adminSettings} onPostSubmit={(r) => setPostRequests(prev => [r, ...prev])} onBoostClick={(p) => navigateTo(Page.Boost)} onLoginRequired={() => setShowLoginModal(true)} />}
             {currentPage === Page.SupportChat && <SupportChat messages={supportMessages.filter(m => m.userEmail === currentUser?.email)} onSend={(text) => setSupportMessages(prev => [...prev, { id: Date.now().toString(), userEmail: currentUser!.email, userName: currentUser!.name, text, timestamp: new Date().toLocaleTimeString(), isAdmin: false, isRead: false }])} onClose={() => setCurrentPage(Page.Home)} />}
-            {currentPage === Page.ProductDetail && selectedProduct && <ProductDetail product={selectedProduct} addToCart={(p) => setCart(prev => [...prev, {product: p, quantity: 1}])} onLoginRequired={() => setShowLoginModal(true)} adminEmails={adminEmails} />}
+            {currentPage === Page.ProductDetail && selectedProduct && <ProductDetail product={selectedProduct} addToCart={(p) => setCart(prev => [...prev, {product: p, quantity: 1}])} onLoginRequired={() => setShowLoginModal(true)} onOpenSupport={() => setCurrentPage(Page.SupportChat)} isLoggedIn={!!currentUser} adminEmails={adminEmails} />}
             {currentPage === Page.Cart && <Cart items={cart} setItems={setCart} setCurrentPage={navigateTo} language={language} />}
             {currentPage === Page.Home && (
               <section className="py-20 bg-slate-50 dark:bg-slate-950">
@@ -381,9 +376,22 @@ const App: React.FC = () => {
         )}
       </main>
 
+      <Footer setCurrentPage={navigateTo} onAdminClick={() => setCurrentPage(Page.AdminLogin)} language={language} />
+      
+      {/* Floating AI Message Button */}
+      <button 
+        onClick={() => navigateTo(Page.AIChat)}
+        className="fixed bottom-28 right-6 lg:bottom-10 lg:right-10 z-[200] w-16 h-16 bg-[#FFD600] text-[#1A237E] rounded-full shadow-[0_10px_30px_rgba(255,214,0,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all animate-glow group"
+      >
+        <Sparkles className="w-8 h-8 group-hover:rotate-12 transition-transform" />
+        <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full animate-bounce">AI</div>
+      </button>
+
+      <BottomNav currentPage={currentPage} setCurrentPage={navigateTo} cartCount={cart.length} language={language} />
+
       {/* Auth Modal */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-[100] bg-[#070B14]/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[300] bg-[#070B14]/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0F172A] w-full max-w-md rounded-[3rem] p-10 border-4 border-[#1A237E] dark:border-[#FFD600]/30 relative animate-in zoom-in shadow-2xl">
             <button onClick={() => setShowLoginModal(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 transition-colors"><X className="w-8 h-8" /></button>
             <div className="text-center mb-10">
@@ -410,7 +418,7 @@ const App: React.FC = () => {
 
       {/* Improved OTP Modal (No Visible Code) */}
       {showOTPModal && (
-        <div className="fixed inset-0 z-[150] bg-[#070B14]/95 backdrop-blur-xl flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[350] bg-[#070B14]/95 backdrop-blur-xl flex items-center justify-center p-4">
           <div className="bg-slate-900 border-4 border-[#FFD600] p-10 md:p-14 rounded-[4rem] w-full max-w-lg shadow-[0_0_50px_rgba(255,214,0,0.3)] text-center relative overflow-hidden animate-in zoom-in">
              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#FFD600] to-transparent animate-pulse"></div>
              

@@ -7,10 +7,12 @@ interface ProductDetailProps {
   product: Product;
   addToCart: (p: Product) => void;
   onLoginRequired: () => void;
+  onOpenSupport: () => void;
+  isLoggedIn: boolean;
   adminEmails?: string[];
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, addToCart, onLoginRequired, adminEmails = [] }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, addToCart, onLoginRequired, onOpenSupport, isLoggedIn, adminEmails = [] }) => {
   const [showFullNumber, setShowFullNumber] = useState(false);
 
   const share = () => {
@@ -26,13 +28,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, addToCart, onLog
     }
   };
 
-  const handleProtectedAction = (action: () => void) => {
-    // We assume the caller handles the user check via onLoginRequired
-    action();
+  const handleMessageClick = () => {
+    if (!isLoggedIn) {
+      onLoginRequired();
+    } else {
+      onOpenSupport();
+    }
   };
 
   return (
-    <div className="py-12 bg-white dark:bg-slate-900 min-h-screen transition-colors">
+    <div className="py-12 bg-white dark:bg-slate-900 min-h-screen transition-colors pb-32 lg:pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="grid lg:grid-cols-12 gap-12">
@@ -91,7 +96,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, addToCart, onLog
                   <ShoppingCart className="w-6 h-6" /> কার্টে যোগ করুন
                 </button>
                 <div className="flex gap-4">
-                  <button onClick={onLoginRequired} className="flex-1 py-4 bg-pink-50 dark:bg-pink-900/20 text-pink-600 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-pink-100 transition-all">
+                  <button onClick={() => !isLoggedIn ? onLoginRequired() : alert('Added to favorites!')} className="flex-1 py-4 bg-pink-50 dark:bg-pink-900/20 text-pink-600 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-pink-100 transition-all">
                     <Heart className="w-5 h-5" /> ফেভারিট
                   </button>
                   <button onClick={share} className="flex-1 py-4 bg-blue-50 dark:bg-blue-900/20 text-blue-600 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-100 transition-all">
@@ -132,9 +137,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, addToCart, onLog
                   <button 
                     onClick={() => {
                       if (!showFullNumber) {
-                        onLoginRequired();
-                        // For demonstration, we'll let them show it, but in real flow login modal blocks it.
-                        setShowFullNumber(true);
+                        if (!isLoggedIn) onLoginRequired();
+                        else setShowFullNumber(true);
                       }
                     }}
                     className="w-full py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-2xl flex items-center justify-center gap-4 shadow-xl hover:bg-yellow-400 transition-all text-lg group"
@@ -143,7 +147,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, addToCart, onLog
                     {showFullNumber ? (product.phone || '+৮৮০ ১৫১৬ ৫৯৫ ৫৯৭') : `কল দিন: ${product.phone?.substring(0, 8) || '+৮৮০ ১৫১৬'}...`}
                   </button>
                   <button 
-                    onClick={onLoginRequired}
+                    onClick={handleMessageClick}
                     className="w-full py-5 bg-white dark:bg-slate-800 text-[#1A237E] dark:text-white border-2 border-[#1A237E] dark:border-slate-600 font-black rounded-2xl flex items-center justify-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all text-lg"
                   >
                     <MessageCircle className="w-6 h-6" /> মেসেজ করুন
