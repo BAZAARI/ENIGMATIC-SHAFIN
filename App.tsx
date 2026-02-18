@@ -126,10 +126,11 @@ const App: React.FC = () => {
   const sendSimulatedOTP = (email: string) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOTP(otp);
-    setOtpTimer(60); // Extended timer for better UX
+    setOtpTimer(60); 
     
+    // Simulating Gmail inbox notification
     setNotification({
-      msg: `[GMAIL SIMULATION] To: ${email} | 6-Digit Code: ${otp}`,
+      msg: `[Gmail Inbox] To: ${email} | New Login/Signup Code: ${otp}`,
       type: 'info'
     });
     
@@ -259,7 +260,7 @@ const App: React.FC = () => {
              {notification.type === 'success' ? <CheckCircle className="w-6 h-6" /> : <BellRing className="w-6 h-6 animate-swing" />}
           </div>
           <div className="flex-1">
-            <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Bazaari Identity System</p>
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Bazaari Network System</p>
             <p className="font-bold text-sm">{notification.msg}</p>
           </div>
           <button onClick={() => setNotification(null)} className="p-1 hover:bg-white/10 rounded-lg"><X className="w-4 h-4" /></button>
@@ -293,10 +294,6 @@ const App: React.FC = () => {
              <span className="text-sm md:text-lg font-black font-mono leading-none tracking-tighter text-[#FFD600]">{uptime.secs.toString().padStart(2, '0')}</span>
              <span className="text-[8px] font-bold uppercase opacity-60">Secs</span>
           </div>
-        </div>
-        <div className="hidden lg:flex items-center gap-1.5 ml-4 px-3 py-0.5 bg-green-500/10 rounded-full border border-green-500/20">
-           <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-           <span className="text-[8px] font-black uppercase text-green-400">Systems Operational</span>
         </div>
       </div>
 
@@ -384,30 +381,26 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <button onClick={() => navigateTo(Page.AIChat)} className="fixed bottom-24 right-6 lg:bottom-10 lg:right-10 z-[80] w-16 h-16 bg-[#1A237E] text-[#FFD600] rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all border-4 border-white dark:border-slate-800 animate-glow group">
-        <Sparkles className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-      </button>
-
-      <Footer language={language} setCurrentPage={navigateTo} onAdminClick={() => setCurrentPage(Page.AdminLogin)} />
-      <BottomNav language={language} currentPage={currentPage} setCurrentPage={navigateTo} cartCount={cart.length} />
-
       {/* Auth Modal */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[3rem] p-10 border-4 border-[#1A237E] relative animate-in zoom-in">
+        <div className="fixed inset-0 z-[100] bg-[#070B14]/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0F172A] w-full max-w-md rounded-[3rem] p-10 border-4 border-[#1A237E] dark:border-[#FFD600]/30 relative animate-in zoom-in shadow-2xl">
             <button onClick={() => setShowLoginModal(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 transition-colors"><X className="w-8 h-8" /></button>
-            <div className="text-center mb-8">
-               <h3 className="text-3xl font-black text-[#1A237E] dark:text-white uppercase italic tracking-tighter">{isSignup ? 'Signup' : 'Welcome Back'}</h3>
+            <div className="text-center mb-10">
+               <h3 className="text-4xl font-black text-[#1A237E] dark:text-white uppercase italic tracking-tighter">{isSignup ? 'Signup' : 'Welcome Back'}</h3>
+               <div className="w-12 h-1 bg-[#FFD600] mx-auto mt-2 rounded-full"></div>
             </div>
-            <form onSubmit={handleAuthSubmit} className="space-y-4">
-              {isSignup && <input type="text" placeholder="Full Name" className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authName} onChange={e => setAuthName(e.target.value)} required />}
-              {isSignup && <input type="text" placeholder="Username (abcd...z0..9)" className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authUsername} onChange={e => setAuthUsername(e.target.value)} required />}
-              <input type="text" placeholder={isSignup ? "Email Address (Gmail)" : "Email or Username"} className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authIdentity} onChange={e => setAuthIdentity(e.target.value)} required />
-              <input type="password" placeholder="Password" className="w-full px-6 py-4 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E]" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required />
-              <button type="submit" className="w-full py-5 bg-[#1A237E] text-[#FFD600] font-black rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 text-lg uppercase">{isSignup ? 'Join Now' : 'Login'}</button>
+            <form onSubmit={handleAuthSubmit} className="space-y-5">
+              {isSignup && <input type="text" placeholder="Full Name" className="w-full px-6 py-5 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E] dark:focus:border-[#FFD600] transition-all" value={authName} onChange={e => setAuthName(e.target.value)} required />}
+              {isSignup && <input type="text" placeholder="Username (abcd...z0..9)" className="w-full px-6 py-5 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E] dark:focus:border-[#FFD600] transition-all" value={authUsername} onChange={e => setAuthUsername(e.target.value)} required />}
+              <input type="text" placeholder={isSignup ? "Email Address (Gmail)" : "Email or Username"} className="w-full px-6 py-5 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E] dark:focus:border-[#FFD600] transition-all" value={authIdentity} onChange={e => setAuthIdentity(e.target.value)} required />
+              <input type="password" placeholder="Password" className="w-full px-6 py-5 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-2xl outline-none font-bold border-2 border-transparent focus:border-[#1A237E] dark:focus:border-[#FFD600] transition-all" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required />
+              <button type="submit" className="w-full py-6 bg-[#1A237E] dark:bg-[#FFD600] text-[#FFD600] dark:text-[#1A237E] font-black rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95 text-xl uppercase italic tracking-tighter">
+                {isSignup ? 'Join Now' : 'Login'}
+              </button>
             </form>
             <div className="mt-8 text-center">
-               <button onClick={() => setIsSignup(!isSignup)} className="text-sm font-bold text-slate-500 hover:text-[#1A237E] transition-colors">
+               <button onClick={() => setIsSignup(!isSignup)} className="text-sm font-black text-slate-500 dark:text-slate-400 hover:text-[#1A237E] dark:hover:text-[#FFD600] transition-colors uppercase tracking-widest">
                  {isSignup ? 'Already have an account? Login' : "Don't have an account? Create one"}
                </button>
             </div>
@@ -415,7 +408,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Enhanced OTP Verification Modal with 6-Digit Support */}
+      {/* Improved OTP Modal (No Visible Code) */}
       {showOTPModal && (
         <div className="fixed inset-0 z-[150] bg-[#070B14]/95 backdrop-blur-xl flex items-center justify-center p-4">
           <div className="bg-slate-900 border-4 border-[#FFD600] p-10 md:p-14 rounded-[4rem] w-full max-w-lg shadow-[0_0_50px_rgba(255,214,0,0.3)] text-center relative overflow-hidden animate-in zoom-in">
@@ -425,10 +418,10 @@ const App: React.FC = () => {
                 <MailCheck className="text-[#FFD600] w-12 h-12" />
              </div>
 
-             <h2 className="text-3xl font-black text-white mb-2 italic uppercase tracking-tighter">Email Verification</h2>
+             <h2 className="text-3xl font-black text-white mb-2 italic uppercase tracking-tighter">Security Verification</h2>
              <p className="text-slate-400 text-sm mb-10 font-medium px-4">
                {language === 'bn' 
-                ? 'আপনার জিমেইল ইনবক্সে একটি ৬ ডিজিটের ভেরিফিকেশন কোড পাঠানো হয়েছে।' 
+                ? 'আপনার ইমেইলে একটি ৬ ডিজিটের ওটিপি পাঠানো হয়েছে। সেটি এখানে দিন।' 
                 : 'A 6-digit verification code has been sent to your Gmail inbox.'}
                <br />
                <span className="text-[#FFD600] font-black">{pendingUser?.email}</span>
@@ -441,20 +434,11 @@ const App: React.FC = () => {
                     id={`otp-${idx}`}
                     type="number"
                     maxLength={1}
-                    className="w-12 h-16 md:w-16 md:h-20 bg-slate-800 border-2 border-white/5 rounded-2xl text-white text-3xl font-black text-center outline-none focus:border-[#FFD600] focus:ring-4 focus:ring-[#FFD600]/10 transition-all"
+                    className="w-12 h-16 md:w-14 md:h-20 bg-slate-800 border-2 border-white/5 rounded-2xl text-white text-3xl font-black text-center outline-none focus:border-[#FFD600] focus:ring-4 focus:ring-[#FFD600]/10 transition-all"
                     value={digit}
                     onChange={e => handleOTPChange(idx, e.target.value)}
                   />
                 ))}
-             </div>
-
-             <div className="mb-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                   <AlertCircle className="text-[#FFD600] w-5 h-5" />
-                   <span className="text-[10px] font-black text-blue-200 uppercase tracking-widest">Debug Mode Code:</span>
-                </div>
-                <span className="font-mono font-black text-[#FFD600] text-xl tracking-widest">{generatedOTP}</span>
-                <button onClick={() => navigator.clipboard.writeText(generatedOTP)} className="p-2 hover:bg-white/10 rounded-lg text-white"><Copy className="w-4 h-4" /></button>
              </div>
 
              <button 
@@ -462,11 +446,11 @@ const App: React.FC = () => {
                disabled={userOTP.some(d => !d) || isOTPVerifying}
                className="w-full py-5 bg-[#FFD600] text-[#1A237E] font-black rounded-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all text-xl uppercase italic flex items-center justify-center gap-3 disabled:opacity-50"
              >
-               {isOTPVerifying ? <Loader2 className="animate-spin" /> : <><ShieldCheck className="w-6 h-6" /> Confirm & Activate</>}
+               {isOTPVerifying ? <Loader2 className="animate-spin" /> : <><ShieldCheck className="w-6 h-6" /> Verify Code</>}
              </button>
 
-             <div className="mt-8 flex flex-col items-center gap-4">
-                <div className="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-widest">
+             <div className="mt-10 flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2 text-slate-500 text-xs font-black uppercase tracking-widest">
                    <Clock className="w-4 h-4" /> 
                    {otpTimer > 0 ? `Resend in ${otpTimer}s` : 'Code expired'}
                 </div>
@@ -476,7 +460,7 @@ const App: React.FC = () => {
                   disabled={otpTimer > 0}
                   className="text-[#FFD600] font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:opacity-80 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  <RefreshCw className={`w-4 h-4 ${otpTimer === 0 ? 'animate-spin' : ''}`} /> Resend to Gmail
+                  <RefreshCw className={`w-4 h-4 ${otpTimer === 0 ? 'animate-spin' : ''}`} /> Resend OTP
                 </button>
              </div>
 
@@ -484,7 +468,7 @@ const App: React.FC = () => {
                onClick={() => { setShowOTPModal(false); setPendingUser(null); }}
                className="mt-10 text-slate-600 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors"
              >
-               Cancel & Go Back
+               Cancel Verification
              </button>
           </div>
         </div>

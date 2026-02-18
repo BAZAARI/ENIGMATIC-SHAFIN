@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Loader2, Lock, ChevronRight, X, Circle } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Loader2, Lock, ChevronRight, X, Circle, AlertCircle } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
 interface AIChatProps {
@@ -9,7 +9,7 @@ interface AIChatProps {
 
 const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
   const [messages, setMessages] = useState<{role: 'user' | 'bot', text: string, showAdminLink?: boolean}[]>([
-    { role: 'bot', text: 'আসসালামু আলাইকুম! আমি Bazaari AI। আপনাকে কীভাবে সাহায্য করতে পারি?' }
+    { role: 'bot', text: 'আসসালামু আলাইকুম! আমি Bazaari Intelligence AI। আপনাকে কীভাবে সাহায্য করতে পারি?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,27 +23,27 @@ const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
-    const userMsg = input;
+    
+    const userMsg = input.trim();
     setInput('');
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
 
     try {
+      // Create a fresh instance for each request as per best practices
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: userMsg,
+        contents: [{ parts: [{ text: userMsg }] }],
         config: {
-          systemInstruction: `You are a helpful customer support AI for Bazaari, a premium lifestyle marketplace in Bangladesh. 
-          Answer in Bengali (Bangla). Keep answers concise, premium, and professional.
-          If the user asks about the Admin Panel or Login, guide them to the Admin Portal link. 
-          The website URL is not needed, just talk about the platform features like buy, sell, and verify.`,
-          temperature: 0.7,
-        }
+          systemInstruction: "You are the official AI assistant of Bazaari, a premium multi-vendor lifestyle marketplace in Bangladesh. Your tone is professional, sophisticated, and helpful. Answer in Bengali (Bangla). If users ask about admin access, guiding them to the 'Admin Portal' is correct. Avoid technical jargon. Keep responses under 100 words unless necessary.",
+          temperature: 0.8,
+        },
       });
       
-      const botText = response.text || 'দুঃখিত, আমি এই মুহূর্তে রেসপন্স করতে পারছি না।';
-      const showAdminLink = /admin|অ্যাডমিন|লগইন|login/i.test(userMsg) || /portal|প্যানেল/i.test(botText);
+      const botText = response.text || 'দুঃখিত, আমি এই মুহূর্তে উত্তর দিতে পারছি না। আবার চেষ্টা করুন।';
+      const showAdminLink = /admin|অ্যাডমিন|লগইন|login|portal/i.test(userMsg + botText);
 
       setMessages(prev => [...prev, { 
         role: 'bot', 
@@ -51,10 +51,10 @@ const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
         showAdminLink: showAdminLink
       }]);
     } catch (error) {
-      console.error("AI Error:", error);
+      console.error("Bazaari AI Network Error:", error);
       setMessages(prev => [...prev, { 
         role: 'bot', 
-        text: 'দুঃখিত, কানেকশনে সমস্যা হচ্ছে। অনুগ্রহ করে আপনার ইন্টারনেট চেক করুন বা কিছুক্ষণ পর চেষ্টা করুন।' 
+        text: 'সিস্টেমে সাময়িক ত্রুটি দেখা দিয়েছে। আপনার ইন্টারনেট চেক করে পুনরায় মেসেজ পাঠান।' 
       }]);
     } finally {
       setLoading(false);
@@ -64,12 +64,12 @@ const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 h-[600px] flex flex-col animate-in fade-in duration-500">
       <div className="bg-white dark:bg-slate-800 rounded-[40px] shadow-2xl flex-1 flex flex-col overflow-hidden border border-slate-100 dark:border-slate-700 relative">
-        {/* Updated AI Chat Header with App Logo */}
+        
+        {/* AI Chat Header */}
         <div className="p-6 bg-[#1A237E] text-white flex items-center justify-between shadow-lg relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse pointer-events-none"></div>
           
           <div className="flex items-center gap-4 relative z-10">
-            {/* Branded App Logo */}
             <div className="relative flex items-center justify-center scale-90">
               <div className="bg-white/10 w-12 h-12 rounded-xl rotate-3 absolute"></div>
               <div className="bg-[#FFD600] w-12 h-12 rounded-xl -rotate-3 border-2 border-[#1A237E] flex items-center justify-center relative z-10 shadow-lg">
@@ -88,17 +88,18 @@ const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
 
           <div className="flex items-center gap-3 relative z-10">
              <div className="bg-white/10 p-2.5 rounded-xl border border-white/10 backdrop-blur-sm">
-               <Sparkles className="w-5 h-5 text-[#FFD600] animate-bounce" />
+               <Sparkles className="w-5 h-5 text-[#FFD600]" />
              </div>
           </div>
         </div>
 
+        {/* Messages Container */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-slate-50/50 dark:bg-slate-950/40">
           {messages.map((m, i) => (
             <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
               <div className={`max-w-[85%] p-5 rounded-3xl flex gap-3 shadow-sm transition-all hover:scale-[1.01] ${
                 m.role === 'user' 
-                  ? 'bg-[#1A237E] text-white rounded-br-none border border-white/5' 
+                  ? 'bg-[#1A237E] text-white rounded-br-none border border-white/5 shadow-blue-900/20' 
                   : 'bg-white dark:bg-slate-700 dark:text-white rounded-bl-none border border-slate-100 dark:border-slate-600'
               }`}>
                 {m.role === 'bot' && <div className="p-1 bg-blue-50 dark:bg-slate-800 rounded-lg shrink-0 h-fit"><Bot className="w-5 h-5 text-[#1A237E] dark:text-[#FFD600]" /></div>}
@@ -127,6 +128,7 @@ const AIChat: React.FC<AIChatProps> = ({ onNavigateToAdmin }) => {
           )}
         </div>
 
+        {/* Input Area */}
         <div className="p-6 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
           <div className="flex gap-3">
             <input 
